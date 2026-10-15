@@ -4,10 +4,10 @@ import io.javalin.http.Context
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.future.future
 import omega.sunkey.sunkensonic.server.Reject
-import omega.sunkey.sunkensonic.server.dataclasses.SinglePlaylistData
-import omega.sunkey.sunkensonic.server.dataclasses.SinglePlaylistView
-import omega.sunkey.sunkensonic.server.dataclasses.SongData
-import omega.sunkey.sunkensonic.server.dataclasses.conType
+import omega.sunkey.sunkensonic.server.responses.SinglePlaylistData
+import omega.sunkey.sunkensonic.server.responses.SinglePlaylistView
+import omega.sunkey.sunkensonic.server.responses.SongData
+import omega.sunkey.sunkensonic.server.responses.conType
 import omega.sunkey.sunkensonic.server.md5
 import omega.sunkey.sunkensonic.server.reject
 import omega.sunkey.sunkensonic.server.room.Playlist

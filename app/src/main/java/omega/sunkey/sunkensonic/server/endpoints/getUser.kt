@@ -4,9 +4,9 @@ import io.javalin.http.Context
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.future.future
 import omega.sunkey.sunkensonic.server.Reject
-import omega.sunkey.sunkensonic.server.dataclasses.MusicFolder
-import omega.sunkey.sunkensonic.server.dataclasses.User
-import omega.sunkey.sunkensonic.server.dataclasses.UserView
+import omega.sunkey.sunkensonic.server.responses.MusicFolder
+import omega.sunkey.sunkensonic.server.responses.User
+import omega.sunkey.sunkensonic.server.responses.UserView
 import omega.sunkey.sunkensonic.server.reject
 import omega.sunkey.sunkensonic.server.room.SubsonicDao
 import omega.sunkey.sunkensonic.server.success

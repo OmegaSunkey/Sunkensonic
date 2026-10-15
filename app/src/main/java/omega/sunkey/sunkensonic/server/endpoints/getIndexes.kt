@@ -3,11 +3,11 @@ package omega.sunkey.sunkensonic.server.endpoints
 import io.javalin.http.Context
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.future.future
-import omega.sunkey.sunkensonic.server.dataclasses.AlbumData
-import omega.sunkey.sunkensonic.server.dataclasses.ArtistData
-import omega.sunkey.sunkensonic.server.dataclasses.Index
-import omega.sunkey.sunkensonic.server.dataclasses.Indexes
-import omega.sunkey.sunkensonic.server.dataclasses.IndexesView
+import omega.sunkey.sunkensonic.server.responses.AlbumData
+import omega.sunkey.sunkensonic.server.responses.ArtistData
+import omega.sunkey.sunkensonic.server.responses.Index
+import omega.sunkey.sunkensonic.server.responses.Indexes
+import omega.sunkey.sunkensonic.server.responses.IndexesView
 import omega.sunkey.sunkensonic.server.room.SubsonicDao
 import omega.sunkey.sunkensonic.server.success
 import omega.sunkey.sunkensonic.server.toIsoTime

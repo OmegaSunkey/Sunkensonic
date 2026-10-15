@@ -4,9 +4,9 @@ import android.content.Context
 import android.util.Log
 import io.javalin.Javalin
 import kotlinx.coroutines.CoroutineScope
-import omega.sunkey.sunkensonic.server.dataclasses.License
-import omega.sunkey.sunkensonic.server.dataclasses.LicenseView
-import omega.sunkey.sunkensonic.server.dataclasses.OpenSubsonicExtensionsPayload
+import omega.sunkey.sunkensonic.server.responses.License
+import omega.sunkey.sunkensonic.server.responses.LicenseView
+import omega.sunkey.sunkensonic.server.responses.OpenSubsonicExtensionsPayload
 import omega.sunkey.sunkensonic.server.endpoints.createPlaylist
 import omega.sunkey.sunkensonic.server.endpoints.deletePlaylist
 import omega.sunkey.sunkensonic.server.endpoints.getAlbum

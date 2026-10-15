@@ -1,4 +1,4 @@
-package omega.sunkey.sunkensonic.server.dataclasses
+package omega.sunkey.sunkensonic.server.responses
 
 data class Playlists(
     val playlist: List<PlaylistData>

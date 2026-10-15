@@ -3,9 +3,9 @@ package omega.sunkey.sunkensonic.server.endpoints
 import io.javalin.http.Context
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.future.future
-import omega.sunkey.sunkensonic.server.dataclasses.AlbumData
-import omega.sunkey.sunkensonic.server.dataclasses.AlbumListView1
-import omega.sunkey.sunkensonic.server.dataclasses.AlbumListView2
+import omega.sunkey.sunkensonic.server.responses.AlbumData
+import omega.sunkey.sunkensonic.server.responses.AlbumListView1
+import omega.sunkey.sunkensonic.server.responses.AlbumListView2
 import omega.sunkey.sunkensonic.server.room.SubsonicDao
 import omega.sunkey.sunkensonic.server.success
 import omega.sunkey.sunkensonic.server.toIsoTime

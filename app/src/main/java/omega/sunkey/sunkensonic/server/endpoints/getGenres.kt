@@ -3,9 +3,9 @@ package omega.sunkey.sunkensonic.server.endpoints
 import io.javalin.http.Context
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.future.future
-import omega.sunkey.sunkensonic.server.dataclasses.Genre
-import omega.sunkey.sunkensonic.server.dataclasses.Genres
-import omega.sunkey.sunkensonic.server.dataclasses.GenresView
+import omega.sunkey.sunkensonic.server.responses.Genre
+import omega.sunkey.sunkensonic.server.responses.Genres
+import omega.sunkey.sunkensonic.server.responses.GenresView
 import omega.sunkey.sunkensonic.server.room.SubsonicDao
 import omega.sunkey.sunkensonic.server.success
 

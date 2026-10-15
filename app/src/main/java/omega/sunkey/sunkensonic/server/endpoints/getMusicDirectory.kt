@@ -4,10 +4,10 @@ import io.javalin.http.Context
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.future.future
 import omega.sunkey.sunkensonic.server.Reject
-import omega.sunkey.sunkensonic.server.dataclasses.Directories
-import omega.sunkey.sunkensonic.server.dataclasses.Directory
-import omega.sunkey.sunkensonic.server.dataclasses.DirectoryChild
-import omega.sunkey.sunkensonic.server.dataclasses.conType
+import omega.sunkey.sunkensonic.server.responses.Directories
+import omega.sunkey.sunkensonic.server.responses.Directory
+import omega.sunkey.sunkensonic.server.responses.DirectoryChild
+import omega.sunkey.sunkensonic.server.responses.conType
 import omega.sunkey.sunkensonic.server.reject
 import omega.sunkey.sunkensonic.server.room.SongWithMetadata
 import omega.sunkey.sunkensonic.server.room.SubsonicDao

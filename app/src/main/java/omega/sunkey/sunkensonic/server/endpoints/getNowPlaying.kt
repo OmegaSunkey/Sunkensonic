@@ -3,10 +3,10 @@ package omega.sunkey.sunkensonic.server.endpoints
 import io.javalin.http.Context
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.future.future
-import omega.sunkey.sunkensonic.server.dataclasses.NowPlaying
-import omega.sunkey.sunkensonic.server.dataclasses.NowPlayingData
-import omega.sunkey.sunkensonic.server.dataclasses.NowPlayingView
-import omega.sunkey.sunkensonic.server.dataclasses.conType
+import omega.sunkey.sunkensonic.server.responses.NowPlaying
+import omega.sunkey.sunkensonic.server.responses.NowPlayingData
+import omega.sunkey.sunkensonic.server.responses.NowPlayingView
+import omega.sunkey.sunkensonic.server.responses.conType
 import omega.sunkey.sunkensonic.server.room.SubsonicDao
 import omega.sunkey.sunkensonic.server.success
 import omega.sunkey.sunkensonic.server.toIsoTime
