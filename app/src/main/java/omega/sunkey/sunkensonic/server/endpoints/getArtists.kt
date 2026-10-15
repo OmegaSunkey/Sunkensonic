@@ -7,6 +7,7 @@ import omega.sunkey.sunkensonic.server.responses.ArtistData
 import omega.sunkey.sunkensonic.server.responses.ArtistIndex
 import omega.sunkey.sunkensonic.server.responses.Artists
 import omega.sunkey.sunkensonic.server.responses.ArtistsView
+import omega.sunkey.sunkensonic.server.responses.toArtistData
 import omega.sunkey.sunkensonic.server.room.SubsonicDao
 import omega.sunkey.sunkensonic.server.success
 import omega.sunkey.sunkensonic.server.toIsoTime
@@ -21,29 +22,11 @@ fun getArtists(context: Context, scope: CoroutineScope, dao: SubsonicDao) {
             val fChar = getFirstChar(metaartist.artist.name, ignoredArticles)
             if(artistMap.containsKey(fChar)) {
                 artistMap[fChar]!!.add(
-                    ArtistData(
-                        metaartist.artist.id,
-                        metaartist.artist.name,
-                        metaartist.albums.size,
-                        metaartist.albums[0].album.coverArt,
-                        metaartist.artist.userRating ?: 0,
-                        metaartist.artist.starred?.toIsoTime(),
-                        metaartist.artist.playCount,
-                        metaartist.artist.lastPlayed?.toIsoTime()
-                    )
+                    metaartist.toArtistData()
                 )
             } else {
                 artistMap[fChar] = mutableListOf<ArtistData>(
-                    ArtistData(
-                        metaartist.artist.id,
-                        metaartist.artist.name,
-                        metaartist.albums.size,
-                        metaartist.albums[0].album.coverArt,
-                        metaartist.artist.userRating ?: 0,
-                        metaartist.artist.starred?.toIsoTime(),
-                        metaartist.artist.playCount,
-                        metaartist.artist.lastPlayed?.toIsoTime()
-                    )
+                    metaartist.toArtistData()
                 )
             }
         }

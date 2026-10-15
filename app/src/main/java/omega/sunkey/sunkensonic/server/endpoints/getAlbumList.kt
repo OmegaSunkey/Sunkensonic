@@ -6,6 +6,7 @@ import kotlinx.coroutines.future.future
 import omega.sunkey.sunkensonic.server.responses.AlbumData
 import omega.sunkey.sunkensonic.server.responses.AlbumListView1
 import omega.sunkey.sunkensonic.server.responses.AlbumListView2
+import omega.sunkey.sunkensonic.server.responses.toAlbumData
 import omega.sunkey.sunkensonic.server.room.SubsonicDao
 import omega.sunkey.sunkensonic.server.success
 import omega.sunkey.sunkensonic.server.toIsoTime
@@ -21,22 +22,7 @@ fun getAlbumList(context: Context, scope: CoroutineScope, dao: SubsonicDao) {
                 totalDuration += it.duration
             }
             albumList.add(
-                AlbumData(
-                    id = it.album.id,
-                    parent = it.album.artistId,
-                    album = it.album.title,
-                    coverArt = it.album.coverArt,
-                    songCount = it.songs.size,
-                    created = it.album.dateAdded.toIsoTime(),
-                    duration = totalDuration,
-                    playCount = it.album.playCount,
-                    played = it.album.lastPlayed?.toIsoTime(),
-                    artistId = it.artist.id,
-                    artist = it.artist.name,
-                    year = it.album.year ?: 2000,
-                    userRating = it.album.userRating ?: 0,
-                    starred = it.album.starred?.toIsoTime()
-                )
+                it.toAlbumData(totalDuration)
             )
         }
         success(context, AlbumListView1(AlbumListView2(albumList)))

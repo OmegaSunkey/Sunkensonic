@@ -9,6 +9,7 @@ import omega.sunkey.sunkensonic.server.responses.SinglePlaylistView
 import omega.sunkey.sunkensonic.server.responses.SongData
 import omega.sunkey.sunkensonic.server.responses.conType
 import omega.sunkey.sunkensonic.server.reject
+import omega.sunkey.sunkensonic.server.responses.toSongData
 import omega.sunkey.sunkensonic.server.room.SubsonicDao
 import omega.sunkey.sunkensonic.server.success
 import omega.sunkey.sunkensonic.server.toIsoTime
@@ -26,32 +27,9 @@ fun getPlaylist(context: Context, scope: CoroutineScope, dao: SubsonicDao) {
             reject(context, Reject.NODATA)
             return@future
         }
-        pl.songs?.forEach { val song = it.song
+        pl.songs?.forEach {
             songs.add(
-                SongData(
-                    id = song.id,
-                    parent = song.albumId,
-                    title = song.title,
-                    album = it.album.title,
-                    artist = it.artist.name,
-                    track = song.track,
-                    year = song.year,
-                    genre = song.genre,
-                    coverArt = song.coverArt,
-                    size = song.size,
-                    contentType = conType(song.suffix),
-                    suffix = song.suffix,
-                    duration = song.duration,
-                    bitRate = song.bitrate,
-                    path = song.path,
-                    created = song.dateAdded.toIsoTime(),
-                    albumId = song.albumId,
-                    artistId = song.artistId,
-                    userRating = song.userRating ?: 0,
-                    starred = song.starred?.toIsoTime(),
-                    playCount = song.playCount,
-                    played = song.lastPlayed?.toIsoTime()
-                )
+                it.toSongData()
             )
         }
         success(

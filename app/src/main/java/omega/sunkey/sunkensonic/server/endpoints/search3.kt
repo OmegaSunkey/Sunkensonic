@@ -11,6 +11,9 @@ import omega.sunkey.sunkensonic.server.responses.SearchView
 import omega.sunkey.sunkensonic.server.responses.SongData
 import omega.sunkey.sunkensonic.server.responses.conType
 import omega.sunkey.sunkensonic.server.reject
+import omega.sunkey.sunkensonic.server.responses.toAlbumData
+import omega.sunkey.sunkensonic.server.responses.toArtistData
+import omega.sunkey.sunkensonic.server.responses.toSongData
 import omega.sunkey.sunkensonic.server.room.SubsonicDao
 import omega.sunkey.sunkensonic.server.success
 import omega.sunkey.sunkensonic.server.toIsoTime
@@ -39,69 +42,21 @@ fun search3(context: Context, scope: CoroutineScope, dao: SubsonicDao) {
         val metasong = mutableListOf<SongData>()
         artists.forEach {
             metaartist.add(
-                ArtistData(
-                    it.artist.id,
-                    it.artist.name,
-                    it.albums.size,
-                    it.albums[0].album.coverArt,
-                    it.artist.userRating ?: 0,
-                    "",
-                    it.artist.playCount,
-                    it.artist.lastPlayed?.toIsoTime(),
-                    it.artist.starred?.toIsoTime()
-                )
+                it.toArtistData()
             )
         }
         albums.forEach {
             var totalDuration = 0
-            it.songs.forEach {
-                totalDuration += it.duration
+            it.songs.forEach { s ->
+                totalDuration += s.duration
             }
             metaalbum.add(
-                AlbumData(
-                    id = it.album.id,
-                    parent = it.album.artistId,
-                    album = it.album.title,
-                    coverArt = it.album.coverArt,
-                    songCount = it.songs.size,
-                    created = it.album.dateAdded.toIsoTime(),
-                    duration = totalDuration,
-                    playCount = it.album.playCount,
-                    played = it.album.lastPlayed?.toIsoTime(),
-                    artistId = it.artist.id,
-                    artist = it.artist.name,
-                    year = it.album.year ?: 2000,
-                    userRating = it.album.userRating ?: 0,
-                    starred = it.album.starred?.toIsoTime()
-                )
+                it.toAlbumData(totalDuration)
             )
         }
         songs.forEach {
             metasong.add(
-                SongData(
-                    id = it.song.id,
-                    parent = it.album.id,
-                    isDir = false,
-                    title = it.song.title,
-                    album = it.album.title,
-                    artist = it.artist.name,
-                    track = it.song.track,
-                    year = it.song.year,
-                    genre = it.song.genre,
-                    coverArt = it.song.coverArt,
-                    size = it.song.size,
-                    contentType = conType(it.song.suffix!!),
-                    suffix = it.song.suffix,
-                    duration = it.song.duration,
-                    bitRate = it.song.bitrate,
-                    path = it.song.path,
-                    discNumber = it.song.discNumber,
-                    created = it.song.dateAdded.toIsoTime(),
-                    albumId = it.song.albumId,
-                    artistId = it.song.artistId,
-                    playCount = it.song.playCount,
-                    played = it.song.lastPlayed?.toIsoTime()
-                )
+                it.toSongData()
             )
         }
         success(context, SearchView(Search(metaartist, metaalbum, metasong)))
