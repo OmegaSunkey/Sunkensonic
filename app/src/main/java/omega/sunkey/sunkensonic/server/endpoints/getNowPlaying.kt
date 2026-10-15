@@ -6,11 +6,9 @@ import kotlinx.coroutines.future.future
 import omega.sunkey.sunkensonic.server.responses.NowPlaying
 import omega.sunkey.sunkensonic.server.responses.NowPlayingData
 import omega.sunkey.sunkensonic.server.responses.NowPlayingView
-import omega.sunkey.sunkensonic.server.responses.conType
 import omega.sunkey.sunkensonic.server.responses.toNowPlayingData
 import omega.sunkey.sunkensonic.server.room.SubsonicDao
 import omega.sunkey.sunkensonic.server.success
-import omega.sunkey.sunkensonic.server.toIsoTime
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 

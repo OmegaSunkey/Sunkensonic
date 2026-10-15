@@ -9,7 +9,6 @@ import omega.sunkey.sunkensonic.server.responses.AlbumListViewNew
 import omega.sunkey.sunkensonic.server.responses.toAlbumData
 import omega.sunkey.sunkensonic.server.room.SubsonicDao
 import omega.sunkey.sunkensonic.server.success
-import omega.sunkey.sunkensonic.server.toIsoTime
 
 fun getAlbumList2(context: Context, scope: CoroutineScope, dao: SubsonicDao) {
     //val type = context.queryParam("type") // lets ignore for now

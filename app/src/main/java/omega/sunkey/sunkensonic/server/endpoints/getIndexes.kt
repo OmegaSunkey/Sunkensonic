@@ -12,7 +12,6 @@ import omega.sunkey.sunkensonic.server.responses.toAlbumData
 import omega.sunkey.sunkensonic.server.responses.toArtistData
 import omega.sunkey.sunkensonic.server.room.SubsonicDao
 import omega.sunkey.sunkensonic.server.success
-import omega.sunkey.sunkensonic.server.toIsoTime
 import kotlin.collections.set
 
 fun getIndexes(context: Context, scope: CoroutineScope, dao: SubsonicDao) {

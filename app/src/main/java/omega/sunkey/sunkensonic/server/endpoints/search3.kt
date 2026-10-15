@@ -9,14 +9,12 @@ import omega.sunkey.sunkensonic.server.responses.ArtistData
 import omega.sunkey.sunkensonic.server.responses.Search
 import omega.sunkey.sunkensonic.server.responses.SearchView
 import omega.sunkey.sunkensonic.server.responses.SongData
-import omega.sunkey.sunkensonic.server.responses.conType
 import omega.sunkey.sunkensonic.server.reject
 import omega.sunkey.sunkensonic.server.responses.toAlbumData
 import omega.sunkey.sunkensonic.server.responses.toArtistData
 import omega.sunkey.sunkensonic.server.responses.toSongData
 import omega.sunkey.sunkensonic.server.room.SubsonicDao
 import omega.sunkey.sunkensonic.server.success
-import omega.sunkey.sunkensonic.server.toIsoTime
 import kotlin.math.min
 
 fun search3(context: Context, scope: CoroutineScope, dao: SubsonicDao) {

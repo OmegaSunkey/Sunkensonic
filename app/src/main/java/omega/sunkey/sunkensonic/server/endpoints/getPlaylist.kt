@@ -7,7 +7,6 @@ import omega.sunkey.sunkensonic.server.Reject
 import omega.sunkey.sunkensonic.server.responses.SinglePlaylistData
 import omega.sunkey.sunkensonic.server.responses.SinglePlaylistView
 import omega.sunkey.sunkensonic.server.responses.SongData
-import omega.sunkey.sunkensonic.server.responses.conType
 import omega.sunkey.sunkensonic.server.reject
 import omega.sunkey.sunkensonic.server.responses.toSongData
 import omega.sunkey.sunkensonic.server.room.SubsonicDao
