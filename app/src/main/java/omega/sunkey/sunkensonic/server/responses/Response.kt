@@ -186,3 +186,15 @@ fun SongWithMetadata.toNowPlayingData(username: String, startedAt: Long): NowPla
         playerId = 0
     )
 }
+
+fun conType(suf: String?): String {
+    return when (suf?.lowercase()) {
+        "mp3" -> "audio/mpeg"
+        "flac" -> "audio/flac"
+        "wav" -> "audio/wav"
+        "ogg" -> "audio/ogg"
+        "m4a" -> "audio/mp4"
+        "opus" -> "audio/opus"
+        else -> "audio/*"
+    }
+}
