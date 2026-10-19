@@ -1,38 +1,41 @@
 package omega.sunkey.sunkensonic.server.endpoints
 
+import android.util.Log
 import io.javalin.http.Context
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.future.future
 import omega.sunkey.sunkensonic.server.Reject
 import omega.sunkey.sunkensonic.server.responses.Directories
 import omega.sunkey.sunkensonic.server.responses.Directory
-import omega.sunkey.sunkensonic.server.responses.DirectoryChild
-import omega.sunkey.sunkensonic.server.responses.conType
 import omega.sunkey.sunkensonic.server.reject
-import omega.sunkey.sunkensonic.server.room.SongWithMetadata
+import omega.sunkey.sunkensonic.server.responses.toSongData
 import omega.sunkey.sunkensonic.server.room.SubsonicDao
 import omega.sunkey.sunkensonic.server.success
-import omega.sunkey.sunkensonic.server.toIsoTime
-import java.net.URLDecoder
-import java.net.URLEncoder
 
 fun getMusicDirectory(context: Context, scope: CoroutineScope, dao: SubsonicDao) {
-    val id = context.queryParam("id")
+    val id = context.queryParam("id")?.toIntOrNull()
     if(id == null) {
         reject(context, Reject.MISSINGPARAM)
         return
     }
     context.future(scope.future {
-        val path = URLDecoder.decode(id, "UTF-8")
-        val allSongs = dao.getSongsByPath(path)
-        if(allSongs.isEmpty()) {
+        val songPaths = dao.getAllSongPaths()
+        val musicfolder = getPathsWithIDs(songPaths)
+        val path = musicfolder[id]
+        if(path == null) {
             reject(context, Reject.NODATA)
             return@future
         }
-        val songs = mutableListOf<SongWithMetadata>()
-        val subdirs = mutableSetOf<String>()
+        val allSongs = dao.getSongsByPath("%${path.name}%")
+        if(allSongs.isEmpty()) {
+            Log.i("getMusicDirectory", path.toString())
+            reject(context, Reject.NODATA)
+            return@future
+        }
+        //val songs = mutableListOf<SongWithMetadata>()
+        /*val subdirs = mutableSetOf<String>()
         for (metasong in allSongs) {
-            val relPath = metasong.song.path.removePrefix(path).removePrefix("/")
+            val relPath = metasong.song.path.removePrefix(path.name).removePrefix("/")
             if(relPath.contains("/")) {
                 val whichsubdir = relPath.substringBefore("/")
                 subdirs.add(whichsubdir)
@@ -55,7 +58,7 @@ fun getMusicDirectory(context: Context, scope: CoroutineScope, dao: SubsonicDao)
             children.add(
                 DirectoryChild(
                     metasong.song.id,
-                    URLEncoder.encode(path, "UTF-8"),
+                    path.id.toString(),
                     metasong.song.title,
                     null,
                     metasong.album.title,
@@ -71,10 +74,11 @@ fun getMusicDirectory(context: Context, scope: CoroutineScope, dao: SubsonicDao)
                     metasong.song.coverArt
                 )
             )
-        }
+        }*/
+        val children = allSongs.map { it.toSongData() }
         val dir = Directory(
-            id,
-            path.substringAfterLast("/"),
+            id.toString(),
+            path.name,
             children
         )
         success(context, Directories(dir))
