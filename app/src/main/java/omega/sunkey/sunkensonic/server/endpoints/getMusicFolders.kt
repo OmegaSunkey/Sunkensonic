@@ -21,6 +21,12 @@ fun getMusicFolders(context: Context, scope: CoroutineScope, dao: SubsonicDao) {
                 )
             )
         }
+        paths.add(
+            MusicFolder(
+                312,
+                "Global"
+            )
+        )
         success(context, MusicFoldersView(MusicFolders(paths.toList())))
     })
 }

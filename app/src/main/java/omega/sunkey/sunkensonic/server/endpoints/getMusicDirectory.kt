@@ -19,9 +19,13 @@ fun getMusicDirectory(context: Context, scope: CoroutineScope, dao: SubsonicDao)
         return
     }
     context.future(scope.future {
+        if (id == 312) {
+            val allSongs = dao.getAllSongsWithMeta()
+            val children = allSongs.map { it.toSongData() }
+            success(context, Directories(Directory(id.toString(), "Global", children)))
+            return@future
+        }
         val songPath = dao.getAllSongPaths().find { it.folderId == id }
-        /*val musicfolder = mutableMapOf<Any, Any>()
-        val path = musicfolder[id]*/
         if(songPath == null) {
             reject(context, Reject.NODATA)
             return@future
@@ -31,53 +35,10 @@ fun getMusicDirectory(context: Context, scope: CoroutineScope, dao: SubsonicDao)
             reject(context, Reject.NODATA)
             return@future
         }
-        //val songs = mutableListOf<SongWithMetadata>()
-        /*val subdirs = mutableSetOf<String>()
-        for (metasong in allSongs) {
-            val relPath = metasong.song.path.removePrefix(path.name).removePrefix("/")
-            if(relPath.contains("/")) {
-                val whichsubdir = relPath.substringBefore("/")
-                subdirs.add(whichsubdir)
-            } else {
-                songs.add(metasong)
-            }
-        }
-        val children = mutableListOf<DirectoryChild>()
-        for(subdir in subdirs) {
-            val subdirPath = "$path/$subdir"
-            children.add(
-                DirectoryChild(
-                    URLEncoder.encode(subdirPath, "UTF-8"),
-                    name = subdir,
-                    isDir = true
-                )
-            )
-        }
-        for(metasong in songs) {
-            children.add(
-                DirectoryChild(
-                    metasong.song.id,
-                    path.id.toString(),
-                    metasong.song.title,
-                    null,
-                    metasong.album.title,
-                    metasong.artist.name,
-                    false,
-                    metasong.song.duration,
-                    null,
-                    metasong.song.size,
-                    metasong.song.suffix,
-                    conType(metasong.song.suffix!!),
-                    metasong.song.path,
-                    metasong.song.dateAdded.toIsoTime(),
-                    metasong.song.coverArt
-                )
-            )
-        }*/
         val children = allSongs.map { it.toSongData() }
         val dir = Directory(
             id.toString(),
-            songPath.path,
+            songPath.path.substringBeforeLast("/").substringAfterLast("/"),
             children
         )
         success(context, Directories(dir))
