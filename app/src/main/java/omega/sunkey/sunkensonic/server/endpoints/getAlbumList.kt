@@ -12,6 +12,7 @@ import omega.sunkey.sunkensonic.server.success
 
 fun getAlbumList(context: Context, scope: CoroutineScope, dao: SubsonicDao) {
     val type = context.queryParam("type") // lets ignore for now
+    val musicFolderId = context.queryParam("musicFolderId")
     context.future(scope.future {
         val allAlbums = dao.getAllAlbumsWithMeta()
         val albumList = mutableListOf<AlbumData>()
@@ -20,9 +21,15 @@ fun getAlbumList(context: Context, scope: CoroutineScope, dao: SubsonicDao) {
             it.songs.forEach {
                 totalDuration += it.duration
             }
-            albumList.add(
-                it.toAlbumData(totalDuration)
-            )
+            if(musicFolderId != null && musicFolderId != "312") {
+                if(it.album.folderId == musicFolderId.toInt()) albumList.add(
+                    it.toAlbumData(totalDuration)
+                )
+            } else {
+                albumList.add(
+                    it.toAlbumData(totalDuration)
+                )
+            }
         }
         success(context, AlbumListView1(AlbumListView2(albumList)))
     })
