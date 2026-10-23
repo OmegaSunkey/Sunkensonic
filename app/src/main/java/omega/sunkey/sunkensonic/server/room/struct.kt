@@ -39,7 +39,8 @@ data class Song(
     @ColumnInfo(name = "starred") val starred: Long? = null,
     @ColumnInfo(name = "user_rating") val userRating: Int? = null,
     @ColumnInfo(name = "play_count") val playCount: Int = 0,
-    @ColumnInfo(name = "last_played") val lastPlayed: Long? = null
+    @ColumnInfo(name = "last_played") val lastPlayed: Long? = null,
+    @ColumnInfo(name = "folder_id") val folderId: Int = 0
 )
 
 @Entity(
@@ -62,7 +63,8 @@ data class Album(
     @ColumnInfo(name = "starred") val starred: Long? = null,
     @ColumnInfo(name = "user_rating") val userRating: Int? = null,
     @ColumnInfo(name = "play_count") val playCount: Int = 0,
-    @ColumnInfo(name = "last_played") val lastPlayed: Long? = null
+    @ColumnInfo(name = "last_played") val lastPlayed: Long? = null,
+    @ColumnInfo(name = "folder_id") val folderId: Int? = null
 )
 
 @Entity(
@@ -74,7 +76,8 @@ data class Artist(
     @ColumnInfo(name = "starred") val starred: Long? = null,
     @ColumnInfo(name = "user_rating") val userRating: Int? = null,
     @ColumnInfo(name = "play_count") val playCount: Int = 0,
-    @ColumnInfo(name = "last_played") val lastPlayed: Long? = null
+    @ColumnInfo(name = "last_played") val lastPlayed: Long? = null,
+    @ColumnInfo(name = "folder_id") val folderId: Int? = null
 )
 
 data class AlbumsWithMeta(

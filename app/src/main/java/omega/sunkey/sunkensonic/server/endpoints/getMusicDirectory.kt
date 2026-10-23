@@ -19,16 +19,15 @@ fun getMusicDirectory(context: Context, scope: CoroutineScope, dao: SubsonicDao)
         return
     }
     context.future(scope.future {
-        val songPaths = dao.getAllSongPaths()
-        val musicfolder = getPathsWithIDs(songPaths)
-        val path = musicfolder[id]
-        if(path == null) {
+        val songPath = dao.getAllSongPaths().find { it.folderId == id }
+        /*val musicfolder = mutableMapOf<Any, Any>()
+        val path = musicfolder[id]*/
+        if(songPath == null) {
             reject(context, Reject.NODATA)
             return@future
         }
-        val allSongs = dao.getSongsByPath("%${path.name}%")
+        val allSongs = dao.getSongsByFolderId(songPath.folderId)
         if(allSongs.isEmpty()) {
-            Log.i("getMusicDirectory", path.toString())
             reject(context, Reject.NODATA)
             return@future
         }
@@ -78,7 +77,7 @@ fun getMusicDirectory(context: Context, scope: CoroutineScope, dao: SubsonicDao)
         val children = allSongs.map { it.toSongData() }
         val dir = Directory(
             id.toString(),
-            path.name,
+            songPath.path,
             children
         )
         success(context, Directories(dir))

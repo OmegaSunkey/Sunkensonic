@@ -13,15 +13,9 @@ import omega.sunkey.sunkensonic.server.success
 fun getUsers(context: Context, scope: CoroutineScope, dao: SubsonicDao) {
     context.future(scope.future {
         val allpaths = dao.getAllSongPaths()
-        val dcpaths = mutableMapOf<Int, MusicFolder>()
-        for (path in allpaths) {
-            val key = path.substringBeforeLast("/").substringAfterLast("/").hashCode()
-            if(!dcpaths.containsKey(key)) {
-                dcpaths[key] = MusicFolder(key, path.substringBeforeLast("/").substringAfterLast("/"))
-            }
-        }
-        val ids = dcpaths.map { (key, _) ->
-            key
+        val ids = mutableListOf<Int>()
+        allpaths.forEach {
+            ids.add(it.folderId)
         }
         val hardcodedUser = User( //im just too lazy now
             "sunkey",

@@ -51,11 +51,12 @@ class MediaScanner (
                     val name = meta.artist ?: "Unknown Artist"
                     val year = file.year ?: meta.year
                     val track = file.track ?: meta.track
+                    val folderId = file.path.substringBeforeLast("/").substringAfterLast("/").hashCode()
                     val artid = name.md5()
                     if(!artists.containsKey(artid)) {
-                        artists[artid] = Artist(artid, name)
+                        artists[artid] = Artist(artid, name, folderId = folderId)
                     } else if (statesItems.containsKey(artid)) {
-                        artists[artid] = Artist(artid, name, statesItems[artid]?.starred, statesItems[artid]?.rating, statesItems[artid]?.playCount ?: 0, statesItems[artid]?.lastPlayed)
+                        artists[artid] = Artist(artid, name, statesItems[artid]?.starred, statesItems[artid]?.rating, statesItems[artid]?.playCount ?: 0, statesItems[artid]?.lastPlayed, folderId)
                         statesItems.remove(artid)
                     }
                     val bitrate = file.bitrate ?: ((file.size * 8) / (file.duration / 1000) / 1000 ).toInt()
@@ -63,9 +64,9 @@ class MediaScanner (
                     val album = meta.album ?: "Unknown Album"
                     val aid = "${artid}_${album}".md5()
                     if (!albums.containsKey(aid)) {
-                        albums[aid] = Album(aid, album, artid, year, file.coverId, file.dateAdded)
+                        albums[aid] = Album(aid, album, artid, year, file.coverId, file.dateAdded, folderId = folderId)
                     } else if(statesItems.containsKey(aid)) {
-                        albums[aid] = Album(aid, album, artid, year, file.coverId, file.dateAdded, statesItems[aid]?.starred, statesItems[aid]?.rating, statesItems[aid]?.playCount ?: 0, statesItems[aid]?.lastPlayed)
+                        albums[aid] = Album(aid, album, artid, year, file.coverId, file.dateAdded, statesItems[aid]?.starred, statesItems[aid]?.rating, statesItems[aid]?.playCount ?: 0, statesItems[aid]?.lastPlayed, folderId)
                         statesItems.remove(aid)
                     }
                     
@@ -97,7 +98,8 @@ class MediaScanner (
                         starred = songstate[0]?.toLongOrNull(),
                         userRating = songstate[1]?.toIntOrNull() ?: 0,
                         playCount = songstate[2]?.toIntOrNull() ?: 0,
-                        lastPlayed = songstate[3]?.toLongOrNull()
+                        lastPlayed = songstate[3]?.toLongOrNull(),
+                        folderId = folderId
                     )
                     songs.add(song)
                     if (statesItems.containsKey(file.id.toString())) statesItems.remove(file.id.toString())
