@@ -9,10 +9,11 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
@@ -21,6 +22,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -31,16 +33,18 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import omega.sunkey.sunkensonic.R
 import omega.sunkey.sunkensonic.server.MediaScanner
 import omega.sunkey.sunkensonic.server.ServerService
+import omega.sunkey.sunkensonic.ui.viewmodel.HomeViewModel
+import omega.sunkey.sunkensonic.ui.viewmodel.Scan
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Home(modifier: Modifier = Modifier) {
+fun Home(modifier: Modifier = Modifier, homeViewModel: HomeViewModel = viewModel()) {
     var started by rememberSaveable { mutableStateOf(false) }
     val context = LocalContext.current
     val perm = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -49,7 +53,7 @@ fun Home(modifier: Modifier = Modifier) {
         Manifest.permission.READ_EXTERNAL_STORAGE
     }
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
-
+    val scanState by homeViewModel.getScanStateAsFlow(context).collectAsState()
 
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
@@ -156,6 +160,20 @@ fun Home(modifier: Modifier = Modifier) {
                     Text("Start scanning (needs storage permission)")
                 }
             )
+            Column(modifier = Modifier.padding(8.dp)) {
+                when (val currentState = scanState) {
+                    is Scan.Idle -> Text("")
+                    is Scan.Scanning -> {
+                        Text(currentState.status)
+                        LinearProgressIndicator(
+                            progress = { currentState.progress / 100f },
+                            modifier = Modifier.fillMaxWidth().padding(top = 8.dp)
+                        )
+                    }
+                    is Scan.Success -> Text("Finished scanning everything! You can start the server now.")
+                    is Scan.Error -> Text("Oops! Something happening during scanning")
+                }
+            }
         }
     }
 }

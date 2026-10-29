@@ -8,6 +8,7 @@ import android.provider.MediaStore
 import android.util.Log
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
+import androidx.work.workDataOf
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import omega.sunkey.sunkensonic.server.room.Artist
@@ -28,15 +29,15 @@ class MediaScanner (
                 val dao = db.subsonicDao()
                 Log.i("MediaScanner", "scanning !!!!!!!!!!!!!!")
 
-                //setProgress(workDataOf("status" to "Cleaning", "progress" to 0))
+                setProgress(workDataOf("status" to "Cleaning", "progress" to 0))
                 dao.clearAllSongs()
                 dao.clearAllAlbums()
                 dao.clearAllArtists()
 
-                //setProgress(workDataOf("status" to "Querying files", "progress" to 5))
+                setProgress(workDataOf("status" to "Querying files", "progress" to 5))
                 val audioFiles = queryAudioFiles()
                 Log.i("MediaScanner", "found ${audioFiles.size} !!!! much!")
-                //setProgress(workDataOf("status" to "Scanning ${audioFiles.size} files", "progress" to 10))
+                setProgress(workDataOf("status" to "Scanning ${audioFiles.size} files", "progress" to 10))
 
                 val artists = mutableMapOf<String, Artist>()
                 val albums = mutableMapOf<String, Album>()
@@ -105,23 +106,21 @@ class MediaScanner (
                     if (statesItems.containsKey(file.id.toString())) statesItems.remove(file.id.toString())
 
                     processedF++
-                    if(processedF % 10 == 0 || processedF == audioFiles.size) {
-                        val p = 10 + ((processedF * 80) / audioFiles.size)
-                        //setProgress(workDataOf("status" to "Scanning $processedF / ${audioFiles.size}", "progress" to p))
-                    }
+                    val p = 10 + ((processedF * 80) / audioFiles.size)
+                    setProgress(workDataOf("status" to "Scanning $processedF / ${audioFiles.size}", "progress" to p))
                 }
 
-                //setProgress(workDataOf("status" to "Indexing everything in database !", "progress" to 95))
+                setProgress(workDataOf("status" to "Indexing everything in database !", "progress" to 95))
                 dao.insertArtists(artists.values.toList())
                 dao.insertAlbums(albums.values.toList())
                 dao.insertSongs(songs)
                 if (statesItems.isNotEmpty()) statesItems.forEach { (id, _) -> dao.removeStar(id) }
                 Log.i("MediaScanner", "done :D | indexed ${artists.size} artists, ${albums.size} albums, and ${songs.size} songs !!!!")
-                //setProgress(workDataOf("status" to "Done !", "progress" to 100))
+                setProgress(workDataOf("status" to "Done !", "progress" to 100))
                 Result.success()
             } catch (e: Exception) {
                 Log.e("MediaScanner", "oops", e)
-                //setProgress(workDataOf("status" to "fail !", "progress" to -1))
+                setProgress(workDataOf("status" to "fail !", "progress" to -1))
                 Result.failure()
             }
         }
