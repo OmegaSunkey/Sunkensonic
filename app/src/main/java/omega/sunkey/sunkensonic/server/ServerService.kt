@@ -20,7 +20,7 @@ import omega.sunkey.sunkensonic.server.endpoints.setBeforeHandler
 class ServerService : Service() {
     private var server: Javalin? = null
     private val serverScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
-    private val channelId = "sunkdrome_server_channel"
+    private val channelId = "sunkensonic_server_channel"
     override fun onCreate() {
         super.onCreate()
         createNotificationChannel()
