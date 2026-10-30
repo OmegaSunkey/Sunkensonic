@@ -52,7 +52,7 @@ class MediaScanner (
                     val name = meta.artist ?: "Unknown Artist"
                     val year = file.year ?: meta.year
                     val track = file.track ?: meta.track
-                    val folderId = file.path.hashCode()
+                    val folderId = file.path.substringBeforeLast("/").hashCode()
                     val artid = name.md5()
                     if(!artists.containsKey(artid)) {
                         artists[artid] = Artist(artid, name, folderId = folderId)
