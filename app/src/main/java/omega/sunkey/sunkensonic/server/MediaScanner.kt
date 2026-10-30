@@ -60,7 +60,8 @@ class MediaScanner (
                         artists[artid] = Artist(artid, name, statesItems[artid]?.starred, statesItems[artid]?.rating, statesItems[artid]?.playCount ?: 0, statesItems[artid]?.lastPlayed, folderId)
                         statesItems.remove(artid)
                     }
-                    val bitrate = file.bitrate ?: ((file.size * 8) / (file.duration / 1000) / 1000 ).toInt()
+                    //Log.i("MediaScanner", "file: ${file.displayName}, duration: ${file.duration}, size: ${file.size}, bitrate: ${file.bitrate}")
+                    val bitrate = file.bitrate ?: if(file.duration != null) ((file.size * 8) / (file.duration.toFloat() / 1000.0f) / 1000 ).toInt() else 0
 
                     val album = meta.album ?: "Unknown Album"
                     val aid = "${artid}_${album}".md5()
@@ -85,7 +86,7 @@ class MediaScanner (
                         title = meta.title ?: file.displayName,
                         albumId = aid,
                         artistId = artid,
-                        duration = file.duration / 1000,
+                        duration = file.duration?.div(1000) ?: 0,
                         bitrate = bitrate,
                         path = file.path,
                         size = file.size,
@@ -132,19 +133,27 @@ class MediaScanner (
         } else {
             MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
         }
-        val projection = arrayOf(
-            MediaStore.Audio.Media._ID,
-            MediaStore.Audio.Media.DISPLAY_NAME,
-            MediaStore.Audio.Media.DURATION,
-            MediaStore.Audio.Media.BITRATE,
-            MediaStore.Audio.Media.SIZE,
-            MediaStore.Audio.Media.DATA,
-            MediaStore.Audio.Media.DATE_ADDED,
-            MediaStore.Audio.Media.ALBUM_ID,
-            MediaStore.Audio.Media.YEAR,
-            MediaStore.Audio.Media.TRACK,
-            MediaStore.Audio.Media.DISC_NUMBER
-        )
+        val projection = arrayListOf(
+            MediaStore.Audio.Media._ID, //Since support starts on API 28, some of these have to go to another block
+            MediaStore.Audio.Media.DISPLAY_NAME, // API 1
+            //MediaStore.Audio.Media.DURATION, // API 29
+            //MediaStore.Audio.Media.BITRATE, // API 30
+            MediaStore.Audio.Media.SIZE, // API 1
+            MediaStore.Audio.Media.DATA, // API 1
+            MediaStore.Audio.Media.DATE_ADDED, // API 1
+            MediaStore.Audio.Media.ALBUM_ID, // API 1
+            MediaStore.Audio.Media.YEAR, // API 1; broken on newer ID3 files
+            MediaStore.Audio.Media.TRACK, // API 1; half broken
+            //MediaStore.Audio.Media.DISC_NUMBER // API 30
+        ).apply { // https://github.com/FoedusProgramme/Gramophone/blob/beta/app/src/main/java/uk/akane/libphonograph/reader/Reader.kt
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                add(MediaStore.Audio.Media.DURATION)
+            }
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                add(MediaStore.Audio.Media.BITRATE)
+                add(MediaStore.Audio.Media.DISC_NUMBER)
+            }
+        }.toTypedArray()
         val sortOrder = "${MediaStore.Audio.Media.DISPLAY_NAME} ASC"
 
         applicationContext.contentResolver.query(
@@ -156,21 +165,21 @@ class MediaScanner (
         )?.use { cursor ->
             val id = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media._ID)
             val name = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DISPLAY_NAME)
-            val dur = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DURATION)
-            val bitr = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.BITRATE)
+            val dur = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DURATION) else null
+            val bitr = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.BITRATE) else null
             val siz = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.SIZE)
             val data = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA)
             val date = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATE_ADDED)
             val albumId = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ALBUM_ID)
             val year = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.YEAR)
             val track = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.TRACK)
-            val discn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DISC_NUMBER)
+            val discn = if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DISC_NUMBER) else null
 
             while (cursor.moveToNext()) {
                 val idd = cursor.getLong(id)
                 val namee = cursor.getString(name)
-                val dura = cursor.getInt(dur)
-                val bitrate = cursor.getInt(bitr)?.div(1000)
+                val dura = dur?.let { col -> cursor.getInt(col) }
+                val bitrate = bitr?.let { col -> cursor.getInt(col).div(1000) }
                 val size = cursor.getLong(siz)
                 val path = cursor.getString(data)
                 val dateAdded = cursor.getLong(date)
@@ -178,7 +187,7 @@ class MediaScanner (
                 val coUri = cursor.getLong(albumId).toString()
                 val yearr = cursor.getInt(year)
                 val trackk = cursor.getInt(track)
-                val discnumber = cursor.getInt(discn)
+                val discnumber = discn?.let { col -> cursor.getInt(col) }
                 audioFiles.add(AudioFile(idd, namee, dura, bitrate, size, path, dateAdded, cUri, coUri, yearr, trackk, discnumber))
             }
         }
@@ -213,7 +222,7 @@ class MediaScanner (
     private data class AudioFile(
         val id: Long,
         val displayName: String,
-        val duration: Int,
+        val duration: Int?,
         val bitrate: Int?,
         val size: Long,
         val path: String,
