@@ -44,6 +44,9 @@ interface SubsonicDao {
     @Query("SELECT * FROM songs WHERE id = :songId")
     suspend fun getSongWithMeta(songId: String): SongWithMetadata?
 
+    @Query("SELECT * FROM songs WHERE id = :songId")
+    suspend fun getSong(songId: String): Song?
+
     data class SongPath(
         val path: String,
         val folderId: Int

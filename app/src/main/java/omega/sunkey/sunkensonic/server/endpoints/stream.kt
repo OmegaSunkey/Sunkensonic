@@ -10,6 +10,7 @@ import omega.sunkey.sunkensonic.server.Reject
 import omega.sunkey.sunkensonic.server.responses.conType
 import omega.sunkey.sunkensonic.server.reject
 import omega.sunkey.sunkensonic.server.room.SubsonicDao
+import kotlin.text.removePrefix
 
 fun stream(context: Context, scope: CoroutineScope, dao: SubsonicDao, androidContext: android.content.Context) {
     val id = context.queryParam("id")
@@ -19,17 +20,16 @@ fun stream(context: Context, scope: CoroutineScope, dao: SubsonicDao, androidCon
     }
     context.header("Accept-Ranges", "bytes")
     context.future(scope.future {
-        val song = dao.getSongWithMeta(id)
+        val song = dao.getSong(id)
         if(song == null) {
             reject(context, Reject.NODATA)
             return@future
         }
-        val range = parseRangeHeader(context.header("Range"), song.song.size.toInt())
-        sendStream(context, song.song.id, conType(song.song.suffix!!), song.song.size, range, androidContext)
+        sendStream(context, song.id, conType(song.suffix!!), song.size, context.header("Range"), androidContext)
     })
 }
 
-fun sendStream(context: Context, id: String, mime: String, size: Long, range: Pair<Int, Int>?, androidContext: android.content.Context) {
+fun sendStream(context: Context, id: String, mime: String, size: Long, range: String?, androidContext: android.content.Context) {
     context.contentType(mime)
 
     val mediaURI = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -44,27 +44,58 @@ fun sendStream(context: Context, id: String, mime: String, size: Long, range: Pa
     )
     val inputStream = androidContext.contentResolver.openInputStream(uri)
     if (inputStream != null && range != null) {
-        val buffer = ByteArray(range.second - range.first)
-        inputStream.read(buffer, 0, range.second - range.first)
+        val rangeStart = range.removePrefix("bytes=").split("-")[0].toIntOrNull()
+        val rangeEnd = range.removePrefix("bytes=").split("-")[1].toIntOrNull()
+        var buffer: ByteArray
+        when {
+            /* 8196
+            * Last 500 Bytes
+            * Range: bytes=-500
+            * 8196-500 = 7696
+            * offset of 7696, length of 500
+            */
+            rangeStart == null && rangeEnd != null -> {
+                buffer = ByteArray(rangeEnd)
+                inputStream.skip(maxOf(0, size - rangeEnd))
+                inputStream.read(buffer, 0, rangeEnd)
+                inputStream.close()
+            }
+            /* Last 500 bytes
+            * Range: bytes=7696-
+            * 8196-7696 = 500
+            * offset of 7696, length of 500
+            */
+            rangeStart != null && rangeEnd == null -> {
+                buffer = ByteArray(maxOf(0, size - rangeStart).toInt())
+                inputStream.skip(rangeStart.toLong())
+                inputStream.read(buffer, 0, minOf(size, size - rangeStart).toInt())
+                inputStream.close()
+            }
+            /* Range of bytes
+            * Range: bytes=400-5667 / 8196
+            * 5667-400 = 5267
+            * offset of 400, length of 5267
+            */
+            rangeStart != null && rangeEnd != null -> {
+                buffer = ByteArray(rangeEnd - rangeStart)
+                inputStream.skip(rangeStart.toLong())
+                inputStream.read(buffer, 0, rangeEnd - rangeStart)
+                inputStream.close()
+            }
+            else -> {
+                reject(context, Reject.GENERIC)
+                return
+            }
+        }
         context.header("Content-Length", "${buffer.size}")
-        context.header("Content-Range", "bytes ${range.first}-${range.second}/$size")
+        context.header("Content-Range", "bytes ${rangeStart}-${rangeEnd}/$size")
         context.status(206)
         context.result(buffer)
     } else if (inputStream != null) {
         context.header("Content-Length", size.toString())
         context.result(inputStream)
-    }
-}
-
-fun parseRangeHeader(range: String?, fileSize: Int): Pair<Int, Int>? {
-    if (range == null) return null
-    val rangeStart = range.removePrefix("bytes=").split("-")[0].toIntOrNull()
-    val rangeEnd = range.removePrefix("bytes=").split("-")[1].toIntOrNull()
-
-    return when {
-        rangeStart == null && rangeEnd != null -> Pair(maxOf(0, fileSize - rangeEnd), fileSize - 1)
-        rangeStart != null && rangeEnd == null && rangeStart <= fileSize -> Pair(rangeStart, fileSize)
-        rangeStart != null && rangeEnd != null && rangeStart <= fileSize -> Pair(rangeStart, minOf(rangeEnd, fileSize - 1))
-        else -> null
+    } else {
+        reject(context, Reject.GENERIC)
+        return
     }
 }
