@@ -49,7 +49,7 @@ class ServerService : Service() {
     }
     private fun notify(): Notification {
         return NotificationCompat.Builder(this, channelId)
-            .setContentTitle("Sunkdrome")
+            .setContentTitle("Sunkensonic")
             .setContentText("Server running: 4040")
             .setSmallIcon(android.R.drawable.ic_media_play)
             .setOngoing(true)
@@ -58,7 +58,7 @@ class ServerService : Service() {
     private fun createNotificationChannel() {
         val channel = NotificationChannel(
             channelId,
-            "Sunkdrome Status",
+            "Sunkensonic Status",
             NotificationManager.IMPORTANCE_LOW
         )
         val manager = getSystemService(NotificationManager::class.java)
