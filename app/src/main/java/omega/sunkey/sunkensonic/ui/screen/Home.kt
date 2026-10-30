@@ -1,8 +1,6 @@
 package omega.sunkey.sunkensonic.ui.screen
 
 import android.Manifest
-import android.content.Context
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -26,7 +24,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -34,18 +31,13 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.work.ExistingWorkPolicy
-import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.WorkManager
 import omega.sunkey.sunkensonic.R
-import omega.sunkey.sunkensonic.server.MediaScanner
-import omega.sunkey.sunkensonic.server.ServerService
 import omega.sunkey.sunkensonic.ui.viewmodel.HomeViewModel
 import omega.sunkey.sunkensonic.ui.viewmodel.Scan
+import omega.sunkey.sunkensonic.ui.viewmodel.Server
 
 @Composable
 fun Home(modifier: Modifier = Modifier, homeViewModel: HomeViewModel = viewModel()) {
-    var started by rememberSaveable { mutableStateOf(false) }
     val context = LocalContext.current
     val perm = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
         Manifest.permission.READ_MEDIA_AUDIO
@@ -54,13 +46,13 @@ fun Home(modifier: Modifier = Modifier, homeViewModel: HomeViewModel = viewModel
     }
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     val scanState by homeViewModel.getScanStateAsFlow(context).collectAsState()
+    val serverState by homeViewModel.getServerStateAsFlow(context).collectAsState()
 
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
     ) { granted ->
         if (granted) {
-            startService(context)
-            started = true
+            homeViewModel.startService(context)
         }
     } // i shall merge start and scan into one later
 
@@ -77,7 +69,7 @@ fun Home(modifier: Modifier = Modifier, homeViewModel: HomeViewModel = viewModel
         contract = ActivityResultContracts.RequestPermission()
     ) { gra ->
         if (gra) {
-            startScan(context)
+            homeViewModel.startScan(context)
             music = true
         }
     }
@@ -118,11 +110,13 @@ fun Home(modifier: Modifier = Modifier, homeViewModel: HomeViewModel = viewModel
         ) {
             ListItem(
                 onClick = {
-                    if (!started && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                        launcher.launch(Manifest.permission.POST_NOTIFICATIONS)
-                    } else if (!started) {
-                        startService(context)
-                        started = true
+                    when(serverState) {
+                        is Server.Disabled -> {
+                            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) launcher.launch(Manifest.permission.POST_NOTIFICATIONS) else homeViewModel.startService(context)
+                        }
+                        is Server.Enabled -> {
+                            return@ListItem
+                        }
                     }
                 },
                 colors = listItemColors,
@@ -130,26 +124,38 @@ fun Home(modifier: Modifier = Modifier, homeViewModel: HomeViewModel = viewModel
                 content = {
                     Text("Start server")
                 },
-                enabled = !started
+                enabled = when(serverState) {
+                    is Server.Disabled -> true
+                    is Server.Enabled -> false
+                }
             )
 
             ListItem(
                 onClick = {
-                    stopService(context)
-                    started = false
+                    when(serverState) {
+                        is Server.Disabled -> {
+                            return@ListItem
+                        }
+                        is Server.Enabled -> {
+                            homeViewModel.stopService(context)
+                        }
+                    }
                 },
                 colors = listItemColors,
                 shapes = ListItemDefaults.segmentedShapes(index = 1, count = 3),
                 content = {
                     Text("Stop server")
                 },
-                enabled = started
+                enabled = when(serverState) {
+                    is Server.Disabled -> false
+                    is Server.Enabled -> true
+                }
             )
 
             ListItem(
                 onClick = {
                     if(music) {
-                        startScan(context)
+                        homeViewModel.startScan(context)
                     } else {
                         tempReq.launch(perm)
                     }
@@ -158,6 +164,10 @@ fun Home(modifier: Modifier = Modifier, homeViewModel: HomeViewModel = viewModel
                 shapes = ListItemDefaults.segmentedShapes(index = 2, count = 3),
                 content = {
                     Text("Start scanning (needs storage permission)")
+                },
+                enabled = when(scanState) {
+                    is Scan.Scanning -> false
+                    is Scan.Success, Scan.Error, Scan.Idle -> true
                 }
             )
             Column(modifier = Modifier.padding(8.dp)) {
@@ -176,23 +186,4 @@ fun Home(modifier: Modifier = Modifier, homeViewModel: HomeViewModel = viewModel
             }
         }
     }
-}
-
-// maaybe these can be moved to a seperate utility/manager file later on
-fun startScan(context: Context) {
-    val req = OneTimeWorkRequestBuilder<MediaScanner>().build()
-    WorkManager.getInstance(context).enqueueUniqueWork(
-        "media_scan",
-        ExistingWorkPolicy.REPLACE,
-        req
-    )
-}
-fun startService(context: Context) {
-    val intent = Intent(context, ServerService::class.java)
-    context.startForegroundService(intent)
-}
-
-fun stopService(context: Context) {
-    val intent = Intent(context, ServerService::class.java)
-    context.stopService(intent)
 }
