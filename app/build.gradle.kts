@@ -61,6 +61,10 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
 
+    implementation(libs.androidx.datastore.preferences)
+    implementation(libs.androidx.datastore)
+    implementation(libs.androidx.datastore.tink)
+
     coreLibraryDesugaring(libs.desugar.jdk.libs)
     implementation(libs.javalin)
     implementation(libs.slf4j.api)
