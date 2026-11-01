@@ -37,7 +37,7 @@ class ServerService : Service() {
 
         return START_STICKY
     }
-    private fun start(port: Int = 4040) {
+    private fun start(port: Int) {
         server = Javalin.create { config ->
             config.showJavalinBanner = false
         }.apply {

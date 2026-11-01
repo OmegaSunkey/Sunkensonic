@@ -72,13 +72,11 @@ class HomeViewModel(private val settingsRepo: SettingsRepo) : ViewModel() {
     private val _serverState = MutableStateFlow<Server>(Server.Disabled)
     val serverState: StateFlow<Server> = _serverState
 
-    val port = runBlocking {
-        settingsRepo.port.read()
-    }
+    val port = settingsRepo.port()
 
-    fun startService(context: Context) {
+    fun startService(context: Context, port: Int) {
         val intent = Intent(context, ServerService::class.java)
-        intent.putExtra("PORT", port ?: 4040)
+        intent.putExtra("PORT", port)
         context.startForegroundService(intent)
         _serverState.value = Server.Enabled
     }

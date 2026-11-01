@@ -47,14 +47,15 @@ fun Home(modifier: Modifier = Modifier, homeViewModel: HomeViewModel = viewModel
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     val scanState by homeViewModel.getScanStateAsFlow(context).collectAsState()
     val serverState by homeViewModel.getServerStateAsFlow(context).collectAsState()
+    val port by homeViewModel.port.collectAsState(4040)
 
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
     ) { granted ->
         if (granted) {
-            homeViewModel.startService(context)
+            homeViewModel.startService(context, port)
         }
-    } // i shall merge start and scan into one later
+    }
 
     var music by remember {
         mutableStateOf(
@@ -112,7 +113,7 @@ fun Home(modifier: Modifier = Modifier, homeViewModel: HomeViewModel = viewModel
                 onClick = {
                     when(serverState) {
                         is Server.Disabled -> {
-                            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) launcher.launch(Manifest.permission.POST_NOTIFICATIONS) else homeViewModel.startService(context)
+                            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) launcher.launch(Manifest.permission.POST_NOTIFICATIONS) else homeViewModel.startService(context, port)
                         }
                         is Server.Enabled -> {
                             return@ListItem
