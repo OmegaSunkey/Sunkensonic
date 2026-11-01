@@ -37,7 +37,7 @@ import omega.sunkey.sunkensonic.ui.viewmodel.Scan
 import omega.sunkey.sunkensonic.ui.viewmodel.Server
 
 @Composable
-fun Home(modifier: Modifier = Modifier, homeViewModel: HomeViewModel = viewModel()) {
+fun Home(modifier: Modifier = Modifier, homeViewModel: HomeViewModel = viewModel(factory = HomeViewModel.Factory), onSettings: () -> Unit) {
     val context = LocalContext.current
     val perm = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
         Manifest.permission.READ_MEDIA_AUDIO
@@ -89,7 +89,7 @@ fun Home(modifier: Modifier = Modifier, homeViewModel: HomeViewModel = viewModel
                 actions = {
                     // this can be used for settings
                     IconButton(
-                        onClick = { /* something something */ }
+                        onClick = { onSettings() }
                     ) {
                         Icon(
                             painter = painterResource(R.drawable.pets),

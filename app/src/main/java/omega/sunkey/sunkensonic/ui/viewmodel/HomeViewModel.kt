@@ -5,7 +5,11 @@ import android.app.Service
 import android.content.Context
 import android.content.Intent
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkInfo
@@ -15,10 +19,15 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import omega.sunkey.sunkensonic.SunkensonicApplication
 import omega.sunkey.sunkensonic.server.MediaScanner
 import omega.sunkey.sunkensonic.server.ServerService
+import omega.sunkey.sunkensonic.settings.Settings
+import omega.sunkey.sunkensonic.settings.SettingsRepo
 
-class HomeViewModel : ViewModel() {
+class HomeViewModel(private val settingsRepo: SettingsRepo) : ViewModel() {
     fun getScanStateAsFlow(context: Context): StateFlow<Scan> {
         val scanState = WorkManager.getInstance(context)
             .getWorkInfosForUniqueWorkFlow("media_scan")
@@ -63,8 +72,13 @@ class HomeViewModel : ViewModel() {
     private val _serverState = MutableStateFlow<Server>(Server.Disabled)
     val serverState: StateFlow<Server> = _serverState
 
+    val port = runBlocking {
+        settingsRepo.port.read()
+    }
+
     fun startService(context: Context) {
         val intent = Intent(context, ServerService::class.java)
+        intent.putExtra("PORT", port ?: 4040)
         context.startForegroundService(intent)
         _serverState.value = Server.Enabled
     }
@@ -82,6 +96,14 @@ class HomeViewModel : ViewModel() {
             ExistingWorkPolicy.REPLACE,
             req
         )
+    }
+
+    companion object {
+        val Factory: ViewModelProvider.Factory = viewModelFactory {
+            initializer {
+                HomeViewModel((this[APPLICATION_KEY] as SunkensonicApplication).settings)
+            }
+        }
     }
 }
 

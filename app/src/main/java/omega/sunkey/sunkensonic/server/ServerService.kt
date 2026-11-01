@@ -27,7 +27,7 @@ class ServerService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        if (server == null) start()
+        if (server == null) start(intent?.getIntExtra("PORT", 4040) ?: 4040)
         val notification = notify()
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             startForeground(1, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC)
@@ -37,13 +37,13 @@ class ServerService : Service() {
 
         return START_STICKY
     }
-    private fun start() {
-        server = Javalin.create() { config ->
+    private fun start(port: Int = 4040) {
+        server = Javalin.create { config ->
             config.showJavalinBanner = false
         }.apply {
             setBeforeHandler()
             setPaths(applicationContext, serverScope)
-        }.start("0.0.0.0",4040)
+        }.start("0.0.0.0", port)
 
         Log.i("ServerService", "started")
     }

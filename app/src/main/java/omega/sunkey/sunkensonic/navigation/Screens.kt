@@ -7,4 +7,6 @@ import kotlinx.serialization.Serializable
 sealed class Screen : NavKey {
     @Serializable
     data object Home : NavKey
+    @Serializable
+    data object Settings : NavKey
 }

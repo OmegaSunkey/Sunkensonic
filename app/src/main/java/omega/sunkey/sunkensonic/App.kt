@@ -15,6 +15,7 @@ import androidx.navigation3.scene.DialogSceneStrategy
 import androidx.navigation3.ui.NavDisplay
 import omega.sunkey.sunkensonic.navigation.Screen
 import omega.sunkey.sunkensonic.ui.screen.Home
+import omega.sunkey.sunkensonic.ui.screen.Settings
 
 @Composable
 fun App() {
@@ -24,15 +25,18 @@ fun App() {
             backStack.removeLastOrNull()
         }
     }
-
     val entryProvider: (NavKey) -> NavEntry<NavKey> = entryProvider {
         entry<Screen.Home> {
             Home(
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier.fillMaxSize(),
+                onSettings = { backStack.add(Screen.Settings) }
             )
         }
-
-        // maybe some more screens later on
+        entry<Screen.Settings> {
+            Settings(
+                onBack = onBack
+            )
+        }
     }
 
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
