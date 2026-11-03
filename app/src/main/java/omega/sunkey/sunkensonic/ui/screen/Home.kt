@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
@@ -25,6 +27,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -97,7 +100,7 @@ fun Home(
                         onClick = { onSettings() }
                     ) {
                         Icon(
-                            painter = painterResource(R.drawable.pets),
+                            painter = painterResource(R.drawable.ic_settings),
                             contentDescription = null
                         )
                     }
@@ -129,7 +132,14 @@ fun Home(
                 colors = listItemColors,
                 shapes = ListItemDefaults.segmentedShapes(index = 0, count = 3),
                 content = {
-                    Text("Start server")
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            painter = painterResource(android.R.drawable.ic_media_play),
+                            contentDescription = "",
+                            modifier = Modifier.padding(end = 8.dp).size(24.dp)
+                        )
+                        Text("Start server")
+                    }
                 },
                 enabled = when(serverState) {
                     is Server.Disabled -> true
@@ -151,7 +161,14 @@ fun Home(
                 colors = listItemColors,
                 shapes = ListItemDefaults.segmentedShapes(index = 1, count = 3),
                 content = {
-                    Text("Stop server")
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_stop),
+                            contentDescription = "",
+                            modifier = Modifier.padding(end = 8.dp).size(24.dp)
+                        )
+                        Text("Stop server")
+                    }
                 },
                 enabled = when(serverState) {
                     is Server.Disabled -> false
@@ -170,7 +187,14 @@ fun Home(
                 colors = listItemColors,
                 shapes = ListItemDefaults.segmentedShapes(index = 2, count = 3),
                 content = {
-                    Text("Start scanning (needs storage permission)")
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_folder_scan),
+                            contentDescription = "",
+                            modifier = Modifier.padding(end = 8.dp).size(24.dp)
+                        )
+                        Text("Start scanning")
+                    }
                 },
                 enabled = when(scanState) {
                     is Scan.Scanning -> false
