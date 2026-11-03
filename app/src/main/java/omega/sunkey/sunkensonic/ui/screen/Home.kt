@@ -37,7 +37,11 @@ import omega.sunkey.sunkensonic.ui.viewmodel.Scan
 import omega.sunkey.sunkensonic.ui.viewmodel.Server
 
 @Composable
-fun Home(modifier: Modifier = Modifier, homeViewModel: HomeViewModel = viewModel(factory = HomeViewModel.Factory), onSettings: () -> Unit) {
+fun Home(
+    modifier: Modifier = Modifier,
+    homeViewModel: HomeViewModel = viewModel(factory = HomeViewModel.Factory),
+    onSettings: () -> Unit
+) {
     val context = LocalContext.current
     val perm = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
         Manifest.permission.READ_MEDIA_AUDIO
@@ -113,7 +117,9 @@ fun Home(modifier: Modifier = Modifier, homeViewModel: HomeViewModel = viewModel
                 onClick = {
                     when(serverState) {
                         is Server.Disabled -> {
-                            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) launcher.launch(Manifest.permission.POST_NOTIFICATIONS) else homeViewModel.startService(context, port)
+                            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                                launcher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                            } else homeViewModel.startService(context, port)
                         }
                         is Server.Enabled -> {
                             return@ListItem
