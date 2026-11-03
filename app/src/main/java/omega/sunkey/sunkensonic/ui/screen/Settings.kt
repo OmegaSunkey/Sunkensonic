@@ -3,7 +3,11 @@ package omega.sunkey.sunkensonic.ui.screen
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material3.AlertDialog
@@ -20,6 +24,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -40,8 +45,11 @@ fun Settings(onBack: () -> Unit, setViewModel: SettingsViewModel = viewModel(fac
             portTextField.setTextAndPlaceCursorAtEnd(port.value.toString())
         }
     }
+    val blacklistedFolders = setViewModel.blacklistedFolders.collectAsStateWithLifecycle(listOf())
+
 
     val showPortDialog = remember { mutableStateOf(false) }
+    val showBlacklistDialog = remember { mutableStateOf(false) }
 
     when {
         showPortDialog.value -> {
@@ -54,6 +62,52 @@ fun Settings(onBack: () -> Unit, setViewModel: SettingsViewModel = viewModel(fac
                 ) {
                     Text("Confirm")
                 } }
+            )
+        }
+        showBlacklistDialog.value -> {
+            AlertDialog(
+                onDismissRequest = {
+                    showBlacklistDialog.value = false
+                },
+                title = {Text("Blacklisted Folders")},
+                text = {
+                    val tempBlacklist = remember {
+                        mutableStateListOf<String>()
+                    }
+                    when {
+                        blacklistedFolders.value.isNotEmpty() -> LaunchedEffect(Unit) {
+                            tempBlacklist.addAll(blacklistedFolders.value)
+                        }
+                    }
+                    LazyColumn {
+                        itemsIndexed(tempBlacklist) { index, folder ->
+                            Row(modifier = Modifier.fillMaxWidth()) {
+                                TextField(
+                                    value = folder,
+                                    onValueChange = { new -> tempBlacklist[index] = new },
+                                    placeholder = { Text("/storage/emulated/0/...") },
+                                    modifier = Modifier.weight(3f)
+                                )
+                                TextButton(
+                                    onClick = {tempBlacklist.removeAt(index)},
+                                    modifier = Modifier.weight(1f)
+                                ) {
+                                    Text("x")
+                                }
+                            }
+                        }
+                        item {
+                            TextButton(onClick = {tempBlacklist.add("")}) {
+                                Text("Add a folder")
+                            }
+                        }
+                        item {
+                            TextButton(onClick = { setViewModel.writeBlacklist(tempBlacklist); showBlacklistDialog.value = false }) {
+                                Text("Apply")
+                            }
+                        }
+                } },
+                confirmButton = { }
             )
         }
     }
@@ -89,7 +143,15 @@ fun Settings(onBack: () -> Unit, setViewModel: SettingsViewModel = viewModel(fac
                     showPortDialog.value = true
                 },
                 colors = listItemColors,
-                shapes = ListItemDefaults.segmentedShapes(index = 0, count = 1)
+                shapes = ListItemDefaults.segmentedShapes(index = 0, count = 2)
+            )
+            ListItem(
+                content = { Text("Blacklist folders from scan") },
+                onClick = {
+                    showBlacklistDialog.value = true
+                },
+                colors = listItemColors,
+                shapes = ListItemDefaults.segmentedShapes(index = 1, count = 2)
             )
         }
     }

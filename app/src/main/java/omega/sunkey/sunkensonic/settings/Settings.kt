@@ -13,7 +13,8 @@ import java.io.OutputStream
 // I used https://github.com/omaawr/tuisku as reference for this. He has a much more complete implementation, I'm only making something simpler.
 @Serializable
 data class Settings(
-    val port: Int = 4040
+    val port: Int = 4040,
+    val dirBlacklist: List<String> = listOf("/storage/emulated/0/Notifications")
 )
 
 object SetSerializer : Serializer<Settings> {
@@ -38,4 +39,5 @@ object SetSerializer : Serializer<Settings> {
 
 class SettingsRepo(settings: DataStore<Settings>) : BasePrefManager(settings) {
     val port = preference(Settings::port)
+    val dirBlacklist = preference(Settings::dirBlacklist)
 }

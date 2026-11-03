@@ -11,6 +11,7 @@ import androidx.work.WorkerParameters
 import androidx.work.workDataOf
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import omega.sunkey.sunkensonic.SunkensonicApplication
 import omega.sunkey.sunkensonic.server.room.Artist
 import omega.sunkey.sunkensonic.server.room.Song
 import omega.sunkey.sunkensonic.server.room.Album
@@ -27,6 +28,10 @@ class MediaScanner (
             try {
                 val db = SubsonicDatabase.getInstance(applicationContext)
                 val dao = db.subsonicDao()
+
+                val settings = (applicationContext as SunkensonicApplication).settings
+                val blacklist = settings.dirBlacklist.read()
+
                 Log.i("MediaScanner", "scanning !!!!!!!!!!!!!!")
 
                 setProgress(workDataOf("status" to "Cleaning", "progress" to 0))
@@ -35,7 +40,10 @@ class MediaScanner (
                 dao.clearAllArtists()
 
                 setProgress(workDataOf("status" to "Querying files", "progress" to 5))
-                val audioFiles = queryAudioFiles()
+                val audioFiles = queryAudioFiles().apply {
+                    removeIf { audio -> !blacklist.isNullOrEmpty() && blacklist.any { it in audio.path } }
+                    toList()
+                }
                 Log.i("MediaScanner", "found ${audioFiles.size} !!!! much!")
                 setProgress(workDataOf("status" to "Scanning ${audioFiles.size} files", "progress" to 10))
 
@@ -126,7 +134,7 @@ class MediaScanner (
             }
         }
     }
-    private fun queryAudioFiles(): List<AudioFile> {
+    private fun queryAudioFiles(): MutableList<AudioFile> {
         val audioFiles = mutableListOf<AudioFile>()
         val collection = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             MediaStore.Audio.Media.getContentUri(MediaStore.VOLUME_EXTERNAL)
