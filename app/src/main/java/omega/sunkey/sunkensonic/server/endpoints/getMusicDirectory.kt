@@ -1,6 +1,5 @@
 package omega.sunkey.sunkensonic.server.endpoints
 
-import android.util.Log
 import io.javalin.http.Context
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.future.future
