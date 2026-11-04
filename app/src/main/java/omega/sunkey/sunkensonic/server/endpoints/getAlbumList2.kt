@@ -11,15 +11,20 @@ import omega.sunkey.sunkensonic.server.room.SubsonicDao
 import omega.sunkey.sunkensonic.server.success
 
 fun getAlbumList2(context: Context, scope: CoroutineScope, dao: SubsonicDao) {
-    //val type = context.queryParam("type") // lets ignore for now
+    val type = context.queryParam("type")
+    val size = context.queryParam("size")?.toIntOrNull()
+    val offset = context.queryParam("offset")?.toIntOrNull()
+    //val fromYear = context.queryParam("fromYear")?.toIntOrNull()
+    //val toYear = context.queryParam("toYear")?.toIntOrNull()
+    val genre = context.queryParam("genre")
     val musicFolderId = context.queryParam("musicFolderId")
     context.future(scope.future {
-        val allAlbums = dao.getAllAlbumsWithMeta()
+        val allAlbums = dao.getAllAlbumsWithMeta(size ?: 500, offset ?: 0)
         val albumList = mutableListOf<AlbumData>()
         allAlbums.forEach {
             var totalDuration = 0
-            it.songs.forEach {
-                totalDuration += it.duration
+            it.songs.forEach { song ->
+                totalDuration += song.duration
             }
             if(musicFolderId != null && musicFolderId != "312") {
                 if(it.album.folderId == musicFolderId.toInt()) albumList.add(
@@ -29,6 +34,19 @@ fun getAlbumList2(context: Context, scope: CoroutineScope, dao: SubsonicDao) {
                 albumList.add(
                     it.toAlbumData(totalDuration)
                 )
+            }
+        }
+        when(type) {
+            "random" -> albumList.shuffle()
+            "newest" -> albumList.sortBy { it.created }
+            "highest" -> albumList.sortBy { it.userRating }
+            "frequent" -> albumList.sortBy { it.playCount }
+            "recent" -> albumList.sortBy { it.played }
+            "alphabeticalByName" -> albumList.sortBy { it.name }
+            "alphabeticalByArtist" -> albumList.sortBy { it.artist }
+            "starred" -> albumList.removeIf { it.starred == null }
+            "byGenre" -> {
+                if (genre != null) albumList.removeIf { it.genre != genre }
             }
         }
         success(context, AlbumListViewNew(AlbumListView2(albumList)))
