@@ -59,8 +59,8 @@ interface SubsonicDao {
     suspend fun getSongsByFolderId(folderId: Int): List<SongWithMetadata>
 
     @Transaction
-    @Query("SELECT * FROM albums")
-    suspend fun getAllAlbumsWithMeta(): List<AlbumsWithMeta>
+    @Query("SELECT * FROM albums LIMIT :limit OFFSET :offset")
+    suspend fun getAllAlbumsWithMeta(limit: Int, offset: Int): List<AlbumsWithMeta>
 
     @Query("SELECT * FROM albums")
     suspend fun getAllAlbums(): List<Album>
