@@ -37,6 +37,7 @@ interface SubsonicDao {
     @Query("SELECT * FROM songs")
     suspend fun getAllSongs(): List<Song>
 
+    @Transaction
     @Query("SELECT * FROM songs")
     suspend fun getAllSongsWithMeta(): List<SongWithMetadata>
 
