@@ -7,9 +7,7 @@ import omega.sunkey.sunkensonic.server.room.Scrobble
 import omega.sunkey.sunkensonic.server.room.SubsonicDao
 import omega.sunkey.sunkensonic.server.success
 import kotlin.time.Clock
-import kotlin.time.ExperimentalTime
 
-@OptIn(ExperimentalTime::class)
 fun scrobble(context: Context, scope: CoroutineScope, dao: SubsonicDao) {
     val ids = context.queryParams("id")
     val times = context.queryParams("time")
@@ -19,16 +17,19 @@ fun scrobble(context: Context, scope: CoroutineScope, dao: SubsonicDao) {
         if (ids.size == times.size) {
             ids.zip(times).forEach { (id, time) ->
                 val now = time.toLongOrNull() ?: Clock.System.now().toEpochMilliseconds()
-                val metasong = dao.getSongWithMeta(id)
+                val metasong = dao.getSongWithMeta(id) ?: return@forEach
                 if (submission == true) {
-                    dao.addPlayCount(id, Clock.System.now().toEpochMilliseconds())
+                    dao.addPlayCount(id, now)
+                    dao.addSongPlayCount(id, now)
+                    dao.addAlbumPlayCount(metasong.album.id, now)
+                    dao.addArtistPlayCount(metasong.artist.id, now)
                 } else {
                     dao.insertScrobble(
                         Scrobble(
                             id = id,
                             username = context.attribute<String>("currentUser")!!,
                             startedAt = now,
-                            expiresAt = now + ((metasong?.song?.duration ?: 300) * 1000)
+                            expiresAt = now + ((metasong.song.duration) * 1000)
                         )
                     )
                 }
