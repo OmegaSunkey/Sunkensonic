@@ -19,7 +19,7 @@ fun getIndexes(context: Context, scope: CoroutineScope, dao: SubsonicDao) {
     context.future(scope.future {
         val ignoredArticles = listOf("The", "El", "La", "Los", "Las")
         val allArtists = dao.getAllArtistsWithMeta()
-        val allAlbums = dao.getAllAlbumsWithMeta()
+        val allAlbums = dao.getAllAlbumsWithMeta(1000, 0)
         val indexArtistMap = mutableMapOf<String, MutableList<ArtistData>>()
         val indexAlbumMap = mutableMapOf<String, MutableList<AlbumData>>()
         val finalIndex = mutableListOf<Index>()
