@@ -13,26 +13,28 @@ import omega.sunkey.sunkensonic.server.success
 
 fun getArtists(context: Context, scope: CoroutineScope, dao: SubsonicDao) {
     val ignoredArticles = listOf("The", "El", "La", "Los", "Las")
+    val musicFolderId = context.queryParam("musicFolderId")?.toIntOrNull()
     context.future(scope.future{
         val allArtists = dao.getAllArtistsWithMeta()
         val artistIndex = mutableListOf<ArtistIndex>()
         val artistMap = mutableMapOf<String, MutableList<ArtistData>>()
         for(metaartist in allArtists) {
+            if(musicFolderId != null && metaartist.artist.folderId != musicFolderId) continue
             val fChar = getFirstChar(metaartist.artist.name, ignoredArticles)
             if(artistMap.containsKey(fChar)) {
                 artistMap[fChar]!!.add(
                     metaartist.toArtistData()
                 )
             } else {
-                artistMap[fChar] = mutableListOf<ArtistData>(
+                artistMap[fChar] = mutableListOf(
                     metaartist.toArtistData()
                 )
             }
         }
-        for (artist in artistMap) {
+        for ((name, artist) in artistMap) {
             artistIndex.add(ArtistIndex(
-                artist.key,
-                artist.value
+                name,
+                artist
             ))
         }
         success(context, ArtistsView(Artists(ignoredArticles.joinToString(), artistIndex)))
