@@ -19,7 +19,7 @@ fun getCoverArt(context: Context, scope: CoroutineScope, dao: SubsonicDao, andro
         reject(context, Reject.MISSINGPARAM)
         return
     }
-    Log.i("endpoint", "${context.fullUrl()}")
+    Log.i("endpoint", context.fullUrl())
     context.future(scope.future {
         val cover = getCoverArt(androidContext, id, dao, context)
         // using regular context.result(inputStream) doesn't work i dont know why, jackson explodes trying to serialize something
