@@ -43,7 +43,9 @@ fun scrobble(context: Context, scope: CoroutineScope, dao: SubsonicDao) {
                     dao.addAlbumPlayCount(metasong.album.id, Clock.System.now().toEpochMilliseconds())
                     dao.addArtistPlayCount(metasong.artist.id, Clock.System.now().toEpochMilliseconds())
                 } else {
-                    val now = times[0].toLongOrNull() ?: Clock.System.now().toEpochMilliseconds()
+                    val now = if (times.isNotEmpty()) {
+                        times[0].toLongOrNull() ?: Clock.System.now().toEpochMilliseconds()
+                    } else Clock.System.now().toEpochMilliseconds()
                     dao.insertScrobble(
                         Scrobble(
                             id = it,
