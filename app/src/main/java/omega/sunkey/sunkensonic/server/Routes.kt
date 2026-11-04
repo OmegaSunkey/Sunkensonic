@@ -9,6 +9,7 @@ import omega.sunkey.sunkensonic.server.responses.LicenseView
 import omega.sunkey.sunkensonic.server.responses.OpenSubsonicExtensionsPayload
 import omega.sunkey.sunkensonic.server.endpoints.createPlaylist
 import omega.sunkey.sunkensonic.server.endpoints.deletePlaylist
+import omega.sunkey.sunkensonic.server.endpoints.download
 import omega.sunkey.sunkensonic.server.endpoints.getAlbum
 import omega.sunkey.sunkensonic.server.endpoints.getAlbumList
 import omega.sunkey.sunkensonic.server.endpoints.getAlbumList2
@@ -162,6 +163,10 @@ fun Javalin.setPaths(context: Context, scope: CoroutineScope) {
 
     this.get("/rest/getGenres*") { ctx ->
         getGenres(ctx, scope, dao)
+    }
+
+    this.get("/rest/download*") { ctx ->
+        download(ctx, scope, dao, context)
     }
 
     this.error(404) { ctx ->
