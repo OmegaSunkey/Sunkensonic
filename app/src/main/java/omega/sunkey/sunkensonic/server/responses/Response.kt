@@ -4,6 +4,7 @@ import omega.sunkey.sunkensonic.server.room.AlbumsWithMeta
 import omega.sunkey.sunkensonic.server.room.ArtistsWithMeta
 import omega.sunkey.sunkensonic.server.room.SongWithMetadata
 import omega.sunkey.sunkensonic.server.toIsoTime
+import omega.sunkey.sunkensonic.server.toIsoTimeMilli
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
@@ -26,6 +27,10 @@ fun AlbumsWithMeta.toAlbumDataWithMeta(): AlbumData {
             size = it.size,
             contentType = conType(it.suffix),
             suffix = it.suffix,
+            userRating = it.userRating ?: 0,
+            starred = it.starred?.toIsoTime(),
+            playCount = it.playCount,
+            played = it.lastPlayed?.toIsoTimeMilli(),
             duration = it.duration,
             bitRate = it.bitrate,
             path = it.path,
@@ -44,7 +49,7 @@ fun AlbumsWithMeta.toAlbumDataWithMeta(): AlbumData {
         created = this.album.dateAdded.toIsoTime(),
         duration = totalDuration,
         playCount = this.album.playCount,
-        played = this.album.lastPlayed?.toIsoTime(),
+        played = this.album.lastPlayed?.toIsoTimeMilli(),
         artistId = this.album.artistId,
         artist = this.artist.name,
         year = this.album.year,
@@ -65,7 +70,7 @@ fun AlbumsWithMeta.toAlbumData(duration: Int): AlbumData {
         created = this.album.dateAdded.toIsoTime(),
         duration = duration,
         playCount = this.album.playCount,
-        played = this.album.lastPlayed?.toIsoTime(),
+        played = this.album.lastPlayed?.toIsoTimeMilli(),
         artistId = this.artist.id,
         artist = this.artist.name,
         year = this.album.year ?: 2000,
@@ -92,7 +97,7 @@ fun ArtistsWithMeta.toArtistDataWithMeta(): ArtistData {
             created = it.album.dateAdded.toIsoTime(),
             duration = totalDuration,
             playCount = it.album.playCount,
-            played = it.album.lastPlayed?.toIsoTime(),
+            played = it.album.lastPlayed?.toIsoTimeMilli(),
             artistId = this.artist.id,
             artist = this.artist.name,
             year = it.album.year ?: 2000,
@@ -108,7 +113,7 @@ fun ArtistsWithMeta.toArtistDataWithMeta(): ArtistData {
         coverArt = this.albums[0].album.coverArt,
         userRating = this.artist.userRating ?: 0,
         playCount = this.artist.playCount,
-        played = this.artist.lastPlayed?.toIsoTime(),
+        played = this.artist.lastPlayed?.toIsoTimeMilli(),
         starred = this.artist.starred?.toIsoTime(),
         album = albums
     )
@@ -122,7 +127,7 @@ fun ArtistsWithMeta.toArtistData(): ArtistData {
         coverArt = this.albums[0].album.coverArt,
         userRating = this.artist.userRating ?: 0,
         playCount = this.artist.playCount,
-        played = this.artist.lastPlayed?.toIsoTime(),
+        played = this.artist.lastPlayed?.toIsoTimeMilli(),
         starred = this.artist.starred?.toIsoTime(),
     )
 }
@@ -145,7 +150,7 @@ fun SongWithMetadata.toSongData(): SongData {
         userRating = this.song.userRating ?: 0,
         starred = this.song.starred?.toIsoTime(),
         playCount = this.song.playCount,
-        played = this.song.lastPlayed?.toIsoTime(),
+        played = this.song.lastPlayed?.toIsoTimeMilli(),
         duration = this.song.duration,
         bitRate = this.song.bitrate,
         path = this.song.path,

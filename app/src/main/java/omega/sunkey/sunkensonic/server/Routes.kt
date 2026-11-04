@@ -178,6 +178,10 @@ fun Long.toIsoTime(): String? {
     return Instant.ofEpochSecond(this).atOffset(ZoneOffset.UTC).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)
 }
 
+fun Long.toIsoTimeMilli(): String? {
+    return Instant.ofEpochMilli(this).atOffset(ZoneOffset.UTC).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)
+}
+
 fun String.md5(): String {
     val md = MessageDigest.getInstance("MD5")
     val digest = md.digest(this.toByteArray())
