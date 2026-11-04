@@ -15,6 +15,7 @@ import omega.sunkey.sunkensonic.server.room.SubsonicDao
 import omega.sunkey.sunkensonic.server.success
 
 fun getStarred(context: Context, scope: CoroutineScope, dao: SubsonicDao) {
+    val musicFolderId = context.queryParam("musicFolderId")?.toIntOrNull()
     context.future(scope.future {
         val allStars = dao.getAllStarred()
         val songList = mutableListOf<SongData>()
@@ -24,9 +25,9 @@ fun getStarred(context: Context, scope: CoroutineScope, dao: SubsonicDao) {
             when(starred.type) {
                 "song" -> {
                     val it = dao.getSongWithMeta(starred.id) ?: return@forEach
-                    songList.add(
-                        it.toSongData()
-                    )
+                    if(musicFolderId != null) {
+                        if (it.song.folderId == musicFolderId) songList.add(it.toSongData())
+                    } else songList.add(it.toSongData())
                 }
                 "album" -> {
                     val it = dao.getAlbumWithSongs(starred.id) ?: return@forEach
@@ -34,15 +35,15 @@ fun getStarred(context: Context, scope: CoroutineScope, dao: SubsonicDao) {
                     it.songs.forEach { song ->
                         totalDuration += song.duration
                     }
-                    albumList.add(
-                        it.toAlbumData(totalDuration)
-                    )
+                    if (musicFolderId !=null) {
+                        if (it.album.folderId == musicFolderId) albumList.add(it.toAlbumData(totalDuration))
+                    } else albumList.add(it.toAlbumData(totalDuration))
                 }
                 "artist" -> {
                     val it = dao.getArtistWithDetails(starred.id) ?: return@forEach
-                    artistList.add(
-                        it.toArtistData()
-                    )
+                    if (musicFolderId != null) {
+                        if (it.artist.folderId == musicFolderId) artistList.add(it.toArtistData())
+                    } else artistList.add(it.toArtistData())
                 }
             }
         }
