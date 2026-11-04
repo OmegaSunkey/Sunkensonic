@@ -16,9 +16,7 @@ import omega.sunkey.sunkensonic.server.room.SubsonicDao
 import omega.sunkey.sunkensonic.server.success
 import omega.sunkey.sunkensonic.server.toIsoTime
 import kotlin.time.Clock
-import kotlin.time.ExperimentalTime
 
-@OptIn(ExperimentalTime::class)
 fun createPlaylist(context: Context, scope: CoroutineScope, dao: SubsonicDao) {
     val name = context.queryParam("name")
     val playlistId = context.queryParam("playlistId")

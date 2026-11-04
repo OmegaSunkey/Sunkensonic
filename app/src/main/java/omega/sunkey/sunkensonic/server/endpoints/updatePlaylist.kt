@@ -8,9 +8,7 @@ import omega.sunkey.sunkensonic.server.reject
 import omega.sunkey.sunkensonic.server.room.SubsonicDao
 import omega.sunkey.sunkensonic.server.success
 import kotlin.time.Clock
-import kotlin.time.ExperimentalTime
 
-@OptIn(ExperimentalTime::class)
 fun updatePlaylist(context: Context, scope: CoroutineScope, dao: SubsonicDao) {
     val playlistId = context.queryParam("playlistId")
     if (playlistId == null) {

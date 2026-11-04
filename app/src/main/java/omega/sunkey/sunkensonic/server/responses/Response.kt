@@ -6,7 +6,6 @@ import omega.sunkey.sunkensonic.server.room.SongWithMetadata
 import omega.sunkey.sunkensonic.server.toIsoTime
 import omega.sunkey.sunkensonic.server.toIsoTimeMilli
 import kotlin.time.Clock
-import kotlin.time.ExperimentalTime
 
 fun AlbumsWithMeta.toAlbumDataWithMeta(): AlbumData {
     val songList = mutableListOf<SongData>()
@@ -161,7 +160,6 @@ fun SongWithMetadata.toSongData(): SongData {
     )
 }
 
-@OptIn(ExperimentalTime::class)
 fun SongWithMetadata.toNowPlayingData(username: String, startedAt: Long): NowPlayingData {
     return NowPlayingData(
         this.song.id,

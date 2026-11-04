@@ -9,9 +9,7 @@ import omega.sunkey.sunkensonic.server.room.States
 import omega.sunkey.sunkensonic.server.room.SubsonicDao
 import omega.sunkey.sunkensonic.server.success
 import kotlin.time.Clock
-import kotlin.time.ExperimentalTime
 
-@OptIn(ExperimentalTime::class)
 fun star(context: Context, scope: CoroutineScope, dao: SubsonicDao) {
     val id = context.queryParam("id")
     val albumId = context.queryParam("albumId")

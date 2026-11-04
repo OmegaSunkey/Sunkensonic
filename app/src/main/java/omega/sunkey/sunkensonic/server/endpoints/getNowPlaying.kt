@@ -10,9 +10,7 @@ import omega.sunkey.sunkensonic.server.responses.toNowPlayingData
 import omega.sunkey.sunkensonic.server.room.SubsonicDao
 import omega.sunkey.sunkensonic.server.success
 import kotlin.time.Clock
-import kotlin.time.ExperimentalTime
 
-@OptIn(ExperimentalTime::class)
 fun getNowPlaying(context: Context, scope: CoroutineScope, dao: SubsonicDao) {
     context.future(scope.future {
         dao.clearScrobbles(Clock.System.now().toEpochMilliseconds())
