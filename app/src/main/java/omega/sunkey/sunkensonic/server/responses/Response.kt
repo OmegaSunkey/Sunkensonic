@@ -73,6 +73,7 @@ fun AlbumsWithMeta.toAlbumData(duration: Int): AlbumData {
         artistId = this.artist.id,
         artist = this.artist.name,
         year = this.album.year ?: 2000,
+        genre = this.songs[0].genre ?: "Unknown Genre",
         userRating = this.album.userRating ?: 0,
         starred = this.album.starred?.toIsoTime()
     )
