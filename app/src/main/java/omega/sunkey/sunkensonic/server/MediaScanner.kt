@@ -61,7 +61,7 @@ class MediaScanner (
                     val year = file.year ?: meta.year
                     val track = file.track ?: meta.track
                     val folderId = file.path.substringBeforeLast("/").hashCode()
-                    val artid = name.md5()
+                    val artid = "ar-" + name.md5()
                     if(!artists.containsKey(artid)) {
                         artists[artid] = Artist(artid, name, folderId = folderId)
                     } else if (statesItems.containsKey(artid)) {
@@ -72,7 +72,7 @@ class MediaScanner (
                     val bitrate = file.bitrate ?: if(file.duration != null) ((file.size * 8) / (file.duration.toFloat() / 1000.0f) / 1000 ).toInt() else 0
 
                     val album = meta.album ?: "Unknown Album"
-                    val aid = "${artid}_${album}".md5()
+                    val aid = "al-" + "${artid}_${album}".md5()
                     if (!albums.containsKey(aid)) {
                         albums[aid] = Album(aid, album, artid, year, file.coverId, file.dateAdded, folderId = folderId)
                     } else if(statesItems.containsKey(aid)) {
@@ -90,7 +90,7 @@ class MediaScanner (
                     } else listOf(null, null, null, null)
 
                     val song = Song(
-                        id = file.id.toString(),
+                        id = "so-" + file.id.toString(),
                         title = meta.title ?: file.displayName,
                         albumId = aid,
                         artistId = artid,
