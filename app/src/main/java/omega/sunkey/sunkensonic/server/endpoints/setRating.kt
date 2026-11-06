@@ -25,13 +25,14 @@ fun setRating(context: Context, scope: CoroutineScope, dao: SubsonicDao) {
         }
     }
     context.future(scope.future {
-        val states = dao.getAllStarred().filter { it.id == id }
-        val state = if (states.isNotEmpty()) states[0] else when {
-            id.startsWith("so") -> States(id, "song", Clock.System.now().epochSeconds)
-            id.startsWith("ar") -> States(id, "artist", Clock.System.now().epochSeconds)
-            id.startsWith("al") -> States(id, "album", Clock.System.now().epochSeconds)
-            else -> null
-        }
+        val states = dao.getStarred(id)
+        val state = states
+            ?: when {
+                id.startsWith("so") -> States(id, "song", Clock.System.now().epochSeconds)
+                id.startsWith("ar") -> States(id, "artist", Clock.System.now().epochSeconds)
+                id.startsWith("al") -> States(id, "album", Clock.System.now().epochSeconds)
+                else -> null
+            }
         if(state == null) {
             reject(context, Reject.NODATA)
             return@future

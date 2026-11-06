@@ -28,13 +28,16 @@ fun star(context: Context, scope: CoroutineScope, dao: SubsonicDao) {
         }
     }
     context.future(scope.future {
-        val states = dao.getAllStarred().filter { it.id == id }
-        val state = if (states.isNotEmpty()) states[0] else when {
-            id != null && id.startsWith("so") -> States(id, "song")
-            id != null && id.startsWith("ar") -> States(id, "artist")
-            id != null && id.startsWith("al") -> States(id, "album")
-            else -> null
-        }
+        val states = dao.getStarred(id ?: albumId ?: artistId ?: "")
+        val state = states
+            ?: when {
+                id != null && id.startsWith("so") -> States(id, "song")
+                id != null && id.startsWith("ar") -> States(id, "artist")
+                id != null && id.startsWith("al") -> States(id, "album")
+                albumId != null -> States(albumId, "album")
+                artistId != null -> States(artistId, "artist")
+                else -> null
+            }
         if(state == null) {
             reject(context, Reject.NODATA)
             return@future
