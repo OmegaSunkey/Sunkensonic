@@ -19,7 +19,22 @@ fun getAlbumList2(context: Context, scope: CoroutineScope, dao: SubsonicDao) {
     val genre = context.queryParam("genre")
     val musicFolderId = context.queryParam("musicFolderId")
     context.future(scope.future {
-        val allAlbums = dao.getAllAlbumsWithMeta(size ?: 500, offset ?: 0)
+        val allAlbums = when(type) {
+            "newest" -> dao.getAllAlbumsByNewest(size ?: 500, offset ?: 0)
+            "highest" -> dao.getAllAlbumsByRating(size ?: 500, offset ?: 0)
+            "frequent" -> dao.getAllAlbumsByFrequency(size ?: 500, offset ?: 0)
+            "recent" -> dao.getAllAlbumsByLastPlayed(size ?: 500, offset ?: 0)
+            "starred" -> dao.getAllAlbumsByStarred(size ?: 500, offset ?: 0)
+            /*"byYear" -> {
+                if(fromYear != null && toYear != null) {
+                    if(fromYear > toYear) {
+                        dao.getAllAlbumsByYearDesc(size ?: 500, offset ?: 0, fromYear, toYear)
+                    } else dao.getAllAlbumsByYearAsc(size ?: 500, offset ?: 0, fromYear, toYear)
+                } else dao.getAllAlbumsByTitle(size ?: 500, offset ?: 0)
+            }*/
+            else -> dao.getAllAlbumsByTitle(500, 0)
+        }
+        val finalSize = if(size != null && size > allAlbums.size) allAlbums.size else size
         val albumList = mutableListOf<AlbumData>()
         allAlbums.forEach {
             var totalDuration = 0
@@ -37,16 +52,28 @@ fun getAlbumList2(context: Context, scope: CoroutineScope, dao: SubsonicDao) {
             }
         }
         when(type) {
-            "random" -> albumList.shuffle()
-            "newest" -> albumList.sortBy { it.created }
-            "highest" -> albumList.sortBy { it.userRating }
-            "frequent" -> albumList.sortBy { it.playCount }
-            "recent" -> albumList.sortBy { it.played }
-            "alphabeticalByName" -> albumList.sortBy { it.name }
-            "alphabeticalByArtist" -> albumList.sortBy { it.artist }
-            "starred" -> albumList.removeIf { it.starred == null }
+            "random" -> albumList.apply {
+                retainAll(albumList.drop(offset ?: 0).subList(0, finalSize ?: albumList.size))
+                shuffle()
+            }
+            "alphabeticalByName" -> albumList.apply {
+                retainAll(albumList.drop(offset ?: 0).subList(0, finalSize ?: albumList.size))
+                sortBy { it.name }
+            }
+            "alphabeticalByArtist" -> albumList.apply {
+                retainAll(albumList.drop(offset ?: 0).subList(0, finalSize ?: albumList.size))
+                sortBy { it.artist }
+            }
+            "starred" -> albumList.apply {
+                retainAll(albumList.drop(offset ?: 0).subList(0, finalSize ?: albumList.size))
+                removeIf { it.starred == null }
+            }
             "byGenre" -> {
-                if (genre != null) albumList.removeIf { it.genre != genre }
+                if (genre != null) albumList.apply {
+                    retainAll(albumList.drop(offset ?: 0).subList(0, finalSize ?: albumList.size))
+                    removeIf { !it.genre.contentEquals(genre) }
+                    sortBy { it.name }
+                }
             }
         }
         success(context, AlbumListViewNew(AlbumListView2(albumList)))

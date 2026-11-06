@@ -29,7 +29,7 @@ fun search3(context: Context, scope: CoroutineScope, dao: SubsonicDao) {
     context.future(scope.future {
         if (query == null) {
             val artists = dao.getAllArtistsWithMeta().map { it.toArtistData() }
-            val albums = dao.getAllAlbumsWithMeta(1000, 0).map {
+            val albums = dao.getAllAlbumsByTitle(1000, 0).map {
                 var totalDuration = 0
                 it.songs.forEach { song ->
                     totalDuration += song.duration

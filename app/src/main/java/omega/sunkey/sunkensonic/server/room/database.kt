@@ -60,8 +60,36 @@ interface SubsonicDao {
     suspend fun getSongsByFolderId(folderId: Int): List<SongWithMetadata>
 
     @Transaction
-    @Query("SELECT * FROM albums LIMIT :limit OFFSET :offset")
-    suspend fun getAllAlbumsWithMeta(limit: Int, offset: Int): List<AlbumsWithMeta>
+    @Query("SELECT * FROM albums ORDER BY title ASC LIMIT :limit OFFSET :offset")
+    suspend fun getAllAlbumsByTitle(limit: Int, offset: Int): List<AlbumsWithMeta>
+
+    @Transaction
+    @Query("SELECT * FROM albums ORDER BY date_added DESC LIMIT :limit OFFSET :offset")
+    suspend fun getAllAlbumsByNewest(limit: Int, offset: Int): List<AlbumsWithMeta>
+
+    @Transaction
+    @Query("SELECT * FROM albums ORDER BY user_rating DESC LIMIT :limit OFFSET :offset")
+    suspend fun getAllAlbumsByRating(limit: Int, offset: Int): List<AlbumsWithMeta>
+
+    @Transaction
+    @Query("SELECT * FROM albums ORDER BY play_count DESC LIMIT :limit OFFSET :offset")
+    suspend fun getAllAlbumsByFrequency(limit: Int, offset: Int): List<AlbumsWithMeta>
+
+    @Transaction
+    @Query("SELECT * FROM albums ORDER BY last_played DESC LIMIT :limit OFFSET :offset")
+    suspend fun getAllAlbumsByLastPlayed(limit: Int, offset: Int): List<AlbumsWithMeta>
+
+    @Transaction
+    @Query("SELECT * FROM albums ORDER BY starred DESC LIMIT :limit OFFSET :offset")
+    suspend fun getAllAlbumsByStarred(limit: Int, offset: Int): List<AlbumsWithMeta>
+
+    @Transaction
+    @Query("SELECT * FROM albums WHERE year > :fromYear AND year < :toYear ORDER BY year DESC LIMIT :limit OFFSET :offset")
+    suspend fun getAllAlbumsByYearDesc(limit: Int, offset: Int, fromYear: Int, toYear: Int): List<AlbumsWithMeta>
+
+    @Transaction
+    @Query("SELECT * FROM albums WHERE year < :fromYear AND year > :toYear ORDER BY year ASC LIMIT :limit OFFSET :offset")
+    suspend fun getAllAlbumsByYearAsc(limit: Int, offset: Int, fromYear: Int, toYear: Int): List<AlbumsWithMeta>
 
     @Query("SELECT * FROM albums")
     suspend fun getAllAlbums(): List<Album>
