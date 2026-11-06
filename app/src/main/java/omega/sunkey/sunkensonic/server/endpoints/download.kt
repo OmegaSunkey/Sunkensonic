@@ -38,7 +38,7 @@ fun getFile(context: Context, id: String, mime: String, size: Long, androidConte
 
     val uri = ContentUris.withAppendedId(
         mediaURI,
-        id.toLong()
+        id.removePrefix("so-").toLong()
     )
     val inputStream = androidContext.contentResolver.openInputStream(uri)
     if (inputStream != null) {

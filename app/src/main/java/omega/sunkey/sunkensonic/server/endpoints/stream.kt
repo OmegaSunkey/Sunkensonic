@@ -40,7 +40,7 @@ fun sendStream(context: Context, id: String, mime: String, size: Long, range: St
 
     val uri = ContentUris.withAppendedId(
         mediaURI,
-        id.toLong()
+        id.removePrefix("so-").toLong()
     )
     val inputStream = androidContext.contentResolver.openInputStream(uri)
     if (inputStream != null && range != null) {
