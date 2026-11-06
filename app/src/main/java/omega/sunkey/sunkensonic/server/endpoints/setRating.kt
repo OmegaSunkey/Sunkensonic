@@ -12,54 +12,58 @@ import kotlin.time.Clock
 
 fun setRating(context: Context, scope: CoroutineScope, dao: SubsonicDao) {
     val id = context.queryParam("id")
-    val albumId = context.queryParam("albumId")
-    val artistId = context.queryParam("artistId")
+    //val albumId = context.queryParam("albumId")
+    //val artistId = context.queryParam("artistId")
     var rating = context.queryParam("rating")?.toIntOrNull()
     when {
-        id != null && albumId != null && artistId != null ||
-                id != null && albumId != null ||
-                id != null && artistId != null ||
-                albumId != null && artistId != null -> {
-            reject(context, Reject.GENERIC)
-            return
-        }
-        id == null && albumId == null && artistId == null && rating == null -> {
+        id == null || rating == null -> {
             reject(context, Reject.MISSINGPARAM)
             return
         }
-        rating != null && rating >= 5 -> {
+        rating >= 5 -> {
             rating = 5
         }
     }
     context.future(scope.future {
+        val states = dao.getAllStarred().filter { it.id == id }
+        val state = if (states.isNotEmpty()) states[0] else when {
+            id.startsWith("so") -> States(id, "song", Clock.System.now().epochSeconds)
+            id.startsWith("ar") -> States(id, "artist", Clock.System.now().epochSeconds)
+            id.startsWith("al") -> States(id, "album", Clock.System.now().epochSeconds)
+            else -> null
+        }
+        if(state == null) {
+            reject(context, Reject.NODATA)
+            return@future
+        }
         val star = when {
-            id != null && rating != 0 -> {
-                States(id, "song", Clock.System.now().epochSeconds, rating).also {
+            id.startsWith("so", false) && rating != 0 -> {
+                state.copy(rating = rating).also {
                     dao.updateSongRating(it.id, it.rating)
                 }
             }
-            artistId != null && rating != 0 -> {
-                States(artistId, "artist", Clock.System.now().epochSeconds, rating).also {
+            id.startsWith("ar", false) && rating != 0 -> {
+                state.copy(rating = rating).also {
                     dao.updateArtistRating(it.id, it.rating)
                 }
             }
-            albumId != null && rating != 0 -> {
-                States(albumId, "artist", Clock.System.now().epochSeconds, rating).also {
+            id.startsWith("al", false) && rating != 0 -> {
+                state.copy(rating = rating).also {
                     dao.updateAlbumRating(it.id, it.rating)
                 }
             }
-            id != null -> {
-                States(id, "song", Clock.System.now().epochSeconds).also {
+            id.startsWith("so", false) -> {
+                state.copy(rating = null).also {
                     dao.updateSongRating(it.id, null)
                 }
             }
-            artistId != null -> {
-                States(artistId, "artist", Clock.System.now().epochSeconds).also {
+            id.startsWith("ar", false) -> {
+                state.copy(rating = null).also {
                     dao.updateArtistRating(it.id, null)
                 }
             }
-            albumId != null -> {
-                States(albumId, "artist", Clock.System.now().epochSeconds).also {
+            id.startsWith("al", false) -> {
+                state.copy(rating = null).also {
                     dao.updateAlbumRating(it.id, null)
                 }
             }

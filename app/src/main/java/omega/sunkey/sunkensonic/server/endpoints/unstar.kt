@@ -27,8 +27,14 @@ fun unstar(context: Context, scope: CoroutineScope, dao: SubsonicDao) {
     }
     context.future(scope.future {
         when {
-            id != null -> dao.removeStar(id).also {
-                dao.updateStarredSong(id, null)
+            id != null && id.startsWith("so", false) -> dao.removeStar(id).also {
+            	dao.updateStarredSong(id, null)
+            }
+            id != null && id.startsWith("al", false) -> dao.removeStar(id).also {
+            	dao.updateStarredAlbum(id, null)
+            }
+            id != null && id.startsWith("ar", false) -> dao.removeStar(id).also {
+            	dao.updateStarredArtist(id, null)
             }
             albumId != null -> dao.removeStar(albumId).also {
                 dao.updateStarredAlbum(albumId, null)

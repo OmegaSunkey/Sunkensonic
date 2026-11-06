@@ -28,19 +28,40 @@ fun star(context: Context, scope: CoroutineScope, dao: SubsonicDao) {
         }
     }
     context.future(scope.future {
+        val states = dao.getAllStarred().filter { it.id == id }
+        val state = if (states.isNotEmpty()) states[0] else when {
+            id != null && id.startsWith("so") -> States(id, "song")
+            id != null && id.startsWith("ar") -> States(id, "artist")
+            id != null && id.startsWith("al") -> States(id, "album")
+            else -> null
+        }
+        if(state == null) {
+            reject(context, Reject.NODATA)
+            return@future
+        }
         val star = when {
-            id != null -> {
-                States(id, "song", Clock.System.now().epochSeconds).also {
-                    dao.updateStarredSong(it.id, it.starred)
-                }
+            id != null && id.startsWith("so", false) -> {
+            	state.copy(starred = Clock.System.now().epochSeconds).also {
+            		dao.updateStarredSong(it.id, it.starred)
+            	}
+            }
+            id != null && id.startsWith("ar", false) -> {
+                state.copy(starred = Clock.System.now().epochSeconds).also {
+            		dao.updateStarredArtist(it.id, it.starred)
+            	}
+            }
+            id != null && id.startsWith("al", false) -> {
+                state.copy(starred = Clock.System.now().epochSeconds).also {
+            		dao.updateStarredAlbum(it.id, it.starred)
+            	}
             }
             artistId != null -> {
-                States(artistId, "artist", Clock.System.now().epochSeconds).also {
+                state.copy(starred = Clock.System.now().epochSeconds).also {
                     dao.updateStarredArtist(it.id, it.starred)
                 }
             }
             albumId != null -> {
-                States(albumId, "artist", Clock.System.now().epochSeconds).also {
+                state.copy(starred = Clock.System.now().epochSeconds).also {
                     dao.updateStarredAlbum(it.id, it.starred)
                 }
             }
