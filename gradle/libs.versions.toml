@@ -34,6 +34,9 @@ workRuntimeKtx = "2.12.0"
 navigation3 = "1.2.0"
 kotlinx-serialization = "1.11.0"
 
+# KTagLib (as alternative metadata retrieval)
+ktaglib = "3.0.0"
+
 [libraries]
 # room, coil and desugaring
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -78,6 +81,9 @@ androidx-navigation3-runtime = { module = "androidx.navigation3:navigation3-runt
 androidx-navigation3-ui = { module = "androidx.navigation3:navigation3-ui", version.ref = "navigation3" }
 kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "kotlinx-serialization" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
+
+# ktaglib
+ktaglib = { module = "com.simplecityapps:ktaglib", version.ref = "ktaglib" }
 
 # datastore
 androidx-datastore = { module = "androidx.datastore:datastore", version.ref = "datastore" }
