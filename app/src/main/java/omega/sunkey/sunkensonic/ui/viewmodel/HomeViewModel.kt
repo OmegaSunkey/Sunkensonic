@@ -19,12 +19,9 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import omega.sunkey.sunkensonic.SunkensonicApplication
-import omega.sunkey.sunkensonic.server.MediaScanner
+import omega.sunkey.sunkensonic.server.KTagLibMediaScanner
 import omega.sunkey.sunkensonic.server.ServerService
-import omega.sunkey.sunkensonic.settings.Settings
 import omega.sunkey.sunkensonic.settings.SettingsRepo
 
 class HomeViewModel(private val settingsRepo: SettingsRepo) : ViewModel() {
@@ -88,7 +85,7 @@ class HomeViewModel(private val settingsRepo: SettingsRepo) : ViewModel() {
     }
 
     fun startScan(context: Context) {
-        val req = OneTimeWorkRequestBuilder<MediaScanner>().build()
+        val req = OneTimeWorkRequestBuilder<KTagLibMediaScanner>().build()
         WorkManager.getInstance(context).enqueueUniqueWork(
             "media_scan",
             ExistingWorkPolicy.REPLACE,
