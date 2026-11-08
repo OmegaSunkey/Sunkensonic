@@ -84,11 +84,11 @@ interface SubsonicDao {
     suspend fun getAllAlbumsByStarred(limit: Int, offset: Int): List<AlbumsWithMeta>
 
     @Transaction
-    @Query("SELECT * FROM albums WHERE year > :fromYear AND year < :toYear ORDER BY year DESC LIMIT :limit OFFSET :offset")
+    @Query("SELECT * FROM albums WHERE year < :fromYear AND year > :toYear ORDER BY year DESC LIMIT :limit OFFSET :offset")
     suspend fun getAllAlbumsByYearDesc(limit: Int, offset: Int, fromYear: Int, toYear: Int): List<AlbumsWithMeta>
 
     @Transaction
-    @Query("SELECT * FROM albums WHERE year < :fromYear AND year > :toYear ORDER BY year ASC LIMIT :limit OFFSET :offset")
+    @Query("SELECT * FROM albums WHERE year > :fromYear AND year < :toYear ORDER BY year ASC LIMIT :limit OFFSET :offset")
     suspend fun getAllAlbumsByYearAsc(limit: Int, offset: Int, fromYear: Int, toYear: Int): List<AlbumsWithMeta>
 
     @Query("SELECT * FROM albums")

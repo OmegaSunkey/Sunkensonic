@@ -14,8 +14,8 @@ fun getAlbumList2(context: Context, scope: CoroutineScope, dao: SubsonicDao) {
     val type = context.queryParam("type")
     val size = context.queryParam("size")?.toIntOrNull()
     val offset = context.queryParam("offset")?.toIntOrNull()
-    //val fromYear = context.queryParam("fromYear")?.toIntOrNull()
-    //val toYear = context.queryParam("toYear")?.toIntOrNull()
+    val fromYear = context.queryParam("fromYear")?.toIntOrNull()
+    val toYear = context.queryParam("toYear")?.toIntOrNull()
     val genre = context.queryParam("genre")
     val musicFolderId = context.queryParam("musicFolderId")
     context.future(scope.future {
@@ -25,13 +25,13 @@ fun getAlbumList2(context: Context, scope: CoroutineScope, dao: SubsonicDao) {
             "frequent" -> dao.getAllAlbumsByFrequency(size ?: 500, offset ?: 0)
             "recent" -> dao.getAllAlbumsByLastPlayed(size ?: 500, offset ?: 0)
             "starred" -> dao.getAllAlbumsByStarred(size ?: 500, offset ?: 0)
-            /*"byYear" -> {
+            "byYear" -> {
                 if(fromYear != null && toYear != null) {
                     if(fromYear > toYear) {
                         dao.getAllAlbumsByYearDesc(size ?: 500, offset ?: 0, fromYear, toYear)
                     } else dao.getAllAlbumsByYearAsc(size ?: 500, offset ?: 0, fromYear, toYear)
                 } else dao.getAllAlbumsByTitle(size ?: 500, offset ?: 0)
-            }*/
+            }
             else -> dao.getAllAlbumsByTitle(500, 0)
         }
         val finalSize = if(size != null && size > allAlbums.size) allAlbums.size else size
