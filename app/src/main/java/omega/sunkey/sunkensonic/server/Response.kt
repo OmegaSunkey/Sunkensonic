@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.JsonUnwrapped
 data class Response<T>(
     val status: String,
     val version: String = "1.16.1",
-    val type: String = "Sunkdrome",
+    val type: String = "SunkenSonic",
     val serverVersion: String = "1.0.0",
     val openSubsonic: Boolean = true,
     @JsonUnwrapped val payload: T? = null
@@ -26,7 +26,7 @@ data class Error(
 data class FailedResponse(
     val status: String = "failed",
     val version: String = "1.16.1",
-    val type: String = "Sunkdrome",
+    val type: String = "SunkenSonic",
     val serverVersion: String = "1.0.0",
     val openSubsonic: Boolean = true,
     val error: Error
