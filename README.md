@@ -12,15 +12,15 @@ For now the server can do the following:
 - stream music
 
 Bugs: 
-- **Year is 0.** See [this MediaStore issue](https://issuetracker.google.com/issues/414645296?pli=1), wont be fixed until I change metadata parser to something that can read the year.
+- **Year is 0.** If this keeps happening to you, please check your file's metadata.
 - **No transcoding.** This server has not implemented transcoding yet.  
 
 ## TO-DO
 
 Implement:
-- getPlayQueue, savePlayQueue
+- getPlayQueue, savePlayQueue, getBookmarks, saveBookmark, deleteBookmark
 - getRandomSongs
-- 
+- getAlbumInfo, getArtistInfo
 
 ## Is this working? What can I use?
 
@@ -28,6 +28,7 @@ I've tested this implementation on the following clients:
 - Navic
 - Supersonic
 - Strawberry
+- Gelly (use the Global folder to see your whole library)
 
 The hardcoded user is sunkey. The password is sunkey. Multiple users implementation will come later. Maybe. Who knows.
 
