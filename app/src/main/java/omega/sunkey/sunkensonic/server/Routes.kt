@@ -16,6 +16,8 @@ import omega.sunkey.sunkensonic.server.endpoints.getAlbumInfo
 import omega.sunkey.sunkensonic.server.endpoints.getAlbumList
 import omega.sunkey.sunkensonic.server.endpoints.getAlbumList2
 import omega.sunkey.sunkensonic.server.endpoints.getArtist
+import omega.sunkey.sunkensonic.server.endpoints.getArtistInfo
+import omega.sunkey.sunkensonic.server.endpoints.getArtistInfo2
 import omega.sunkey.sunkensonic.server.endpoints.getArtists
 import omega.sunkey.sunkensonic.server.endpoints.getCoverArt
 import omega.sunkey.sunkensonic.server.endpoints.getGenres
@@ -66,6 +68,14 @@ fun Javalin.setPaths(context: Context, scope: CoroutineScope, lastFmKey: String)
 
     this.get("/rest/getMusicDirectory*") { ctx ->
         getMusicDirectory(ctx, scope, dao)
+    }
+
+    this.get("/rest/getArtistInfo2*") { ctx ->
+        getArtistInfo2(ctx, scope, dao, lastFmKey, httpClient)
+    }
+
+    this.get("/rest/getArtistInfo*") { ctx ->
+        getArtistInfo(ctx, scope, dao, lastFmKey, httpClient)
     }
 
     this.get("/rest/getArtists*") { ctx ->

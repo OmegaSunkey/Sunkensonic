@@ -104,6 +104,9 @@ interface SubsonicDao {
     @Query("UPDATE albums SET listen_brainz_id = :lbid, small_image_url= :small, medium_image_url = :medium, large_image_url = :large WHERE id = :id")
     suspend fun updateAlbumLastFM(id: String, lbid: String, small: String, medium: String, large: String)
 
+    @Query("UPDATE artists SET listen_brainz_id = :lbid, small_image_url= :small, medium_image_url = :medium, large_image_url = :large, biography = :bio WHERE id = :id")
+    suspend fun updateArtistLastFM(id: String, lbid: String, small: String, medium: String, large: String, bio: String)
+
     @Query("SELECT * FROM artists ORDER BY name ASC")
     suspend fun getAllArtists(): List<Artist>
 
