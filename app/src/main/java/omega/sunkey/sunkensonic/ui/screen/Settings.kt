@@ -42,10 +42,17 @@ import omega.sunkey.sunkensonic.ui.viewmodel.SettingsViewModel
 @Composable
 fun Settings(onBack: () -> Unit, setViewModel: SettingsViewModel = viewModel(factory = SettingsViewModel.Factory)) {
     val port = setViewModel.port.collectAsStateWithLifecycle(initialValue = null)
+    val lastFmKey = setViewModel.lastFmKey.collectAsStateWithLifecycle(null)
     val portTextField = rememberTextFieldState()
+    val lastFmField = rememberTextFieldState()
     when {
         port.value != null -> LaunchedEffect(Unit) {
             portTextField.setTextAndPlaceCursorAtEnd(port.value.toString())
+        }
+    }
+    when { // i also dont know why do i need to separate them
+        lastFmKey.value != null -> LaunchedEffect(Unit) {
+            lastFmField.setTextAndPlaceCursorAtEnd(lastFmKey.value.toString())
         }
     }
     val blacklistedFolders = setViewModel.blacklistedFolders.collectAsStateWithLifecycle(listOf())
@@ -53,6 +60,7 @@ fun Settings(onBack: () -> Unit, setViewModel: SettingsViewModel = viewModel(fac
 
     val showPortDialog = remember { mutableStateOf(false) }
     val showBlacklistDialog = remember { mutableStateOf(false) }
+    val showLastFmDialog = remember { mutableStateOf(false) }
 
     when {
         showPortDialog.value -> {
@@ -74,11 +82,52 @@ fun Settings(onBack: () -> Unit, setViewModel: SettingsViewModel = viewModel(fac
                     ) {
                         Text("Confirm")
                     }
+                },
+                dismissButton = {
+                    TextButton(
+                        onClick = {
+                            showPortDialog.value = false
+                        }
+                    ) {
+                        Text("Cancel")
+                    }
                 }
             )
         }
         showBlacklistDialog.value -> {
             BlacklistDialog(showBlacklistDialog, blacklistedFolders.value, setViewModel)
+        }
+        showLastFmDialog.value -> {
+            AlertDialog(
+                onDismissRequest = { showLastFmDialog.value = false },
+                title = { Text("Set LastFM Key") },
+                text = {
+                    OutlinedTextField(
+                        state = lastFmField,
+                        placeholder = { Text("Your LastFM Key") }
+                    )
+                },
+                confirmButton = {
+                    TextButton(
+                        onClick = {
+                            setViewModel.writeLastFmKey(lastFmField.text.toString())
+                            showLastFmDialog.value = false
+                        }
+                    ) {
+                        Text("Confirm")
+                    }
+                },
+                dismissButton = {
+                    TextButton(
+                        onClick = {
+                            lastFmKey.value?.let { lastFmField.setTextAndPlaceCursorAtEnd(it) }
+                            showLastFmDialog.value = false
+                        }
+                    ) {
+                        Text("Cancel")
+                    }
+                }
+            )
         }
     }
 
@@ -112,7 +161,7 @@ fun Settings(onBack: () -> Unit, setViewModel: SettingsViewModel = viewModel(fac
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(
                             painter = painterResource(R.drawable.ic_123),
-                            contentDescription = "",
+                            contentDescription = "123",
                             modifier = Modifier.padding(end = 8.dp).size(24.dp)
                         )
                         Text("Set the server's port")
@@ -122,14 +171,14 @@ fun Settings(onBack: () -> Unit, setViewModel: SettingsViewModel = viewModel(fac
                     showPortDialog.value = true
                 },
                 colors = listItemColors,
-                shapes = ListItemDefaults.segmentedShapes(index = 0, count = 2)
+                shapes = ListItemDefaults.segmentedShapes(index = 0, count = 3)
             )
             ListItem(
                 content = {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(
                             painter = painterResource(R.drawable.ic_folder_limited),
-                            contentDescription = "",
+                            contentDescription = "Blacklisted folder",
                             modifier = Modifier.padding(end = 8.dp).size(24.dp)
                         )
                         Text("Blacklist folders from scan")
@@ -139,7 +188,24 @@ fun Settings(onBack: () -> Unit, setViewModel: SettingsViewModel = viewModel(fac
                     showBlacklistDialog.value = true
                 },
                 colors = listItemColors,
-                shapes = ListItemDefaults.segmentedShapes(index = 1, count = 2)
+                shapes = ListItemDefaults.segmentedShapes(index = 1, count = 3)
+            )
+            ListItem(
+                content = {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_passkey),
+                            contentDescription = "Api Key",
+                            modifier = Modifier.padding(end = 8.dp).size(24.dp)
+                        )
+                        Text("Set your LastFM API Key")
+                    }
+                },
+                onClick = {
+                    showLastFmDialog.value = true
+                },
+                colors = listItemColors,
+                shapes = ListItemDefaults.segmentedShapes(index = 2, count = 3)
             )
         }
     }

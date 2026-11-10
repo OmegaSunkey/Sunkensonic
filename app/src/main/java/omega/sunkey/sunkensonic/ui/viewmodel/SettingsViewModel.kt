@@ -13,6 +13,7 @@ import omega.sunkey.sunkensonic.settings.SettingsRepo
 class SettingsViewModel(private val settingsRepo: SettingsRepo) : ViewModel() {
     val port = settingsRepo.port()
     val blacklistedFolders = settingsRepo.dirBlacklist()
+    val lastFmKey = settingsRepo.lastFmKey()
     fun writePort(value: Int) {
         viewModelScope.launch {
             settingsRepo.port.update { port ->
@@ -25,6 +26,13 @@ class SettingsViewModel(private val settingsRepo: SettingsRepo) : ViewModel() {
         viewModelScope.launch {
             settingsRepo.dirBlacklist.update { dir ->
                 dir.copy(dirBlacklist = value)
+            }
+        }
+    }
+    fun writeLastFmKey(value: String) {
+        viewModelScope.launch {
+            settingsRepo.lastFmKey.update { key ->
+                key.copy(lastFmKey = value)
             }
         }
     }

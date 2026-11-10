@@ -70,10 +70,12 @@ class HomeViewModel(private val settingsRepo: SettingsRepo) : ViewModel() {
     val serverState: StateFlow<Server> = _serverState
 
     val port = settingsRepo.port()
+    val lastFmKey = settingsRepo.lastFmKey()
 
-    fun startService(context: Context, port: Int) {
+    fun startService(context: Context, port: Int, lastFmKey: String) {
         val intent = Intent(context, ServerService::class.java)
         intent.putExtra("PORT", port)
+        intent.putExtra("KEY", lastFmKey)
         context.startForegroundService(intent)
         _serverState.value = Server.Enabled
     }

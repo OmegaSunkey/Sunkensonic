@@ -55,12 +55,13 @@ fun Home(
     val scanState by homeViewModel.getScanStateAsFlow(context).collectAsState()
     val serverState by homeViewModel.getServerStateAsFlow(context).collectAsState()
     val port by homeViewModel.port.collectAsState(4040)
+    val lastFmKey by homeViewModel.lastFmKey.collectAsState("")
 
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
     ) { granted ->
         if (granted) {
-            homeViewModel.startService(context, port)
+            homeViewModel.startService(context, port, lastFmKey)
         }
     }
 
@@ -122,7 +123,7 @@ fun Home(
                         is Server.Disabled -> {
                             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                                 launcher.launch(Manifest.permission.POST_NOTIFICATIONS)
-                            } else homeViewModel.startService(context, port)
+                            } else homeViewModel.startService(context, port, lastFmKey)
                         }
                         is Server.Enabled -> {
                             return@ListItem

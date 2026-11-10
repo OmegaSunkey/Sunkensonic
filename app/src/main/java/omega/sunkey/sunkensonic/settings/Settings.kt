@@ -14,7 +14,8 @@ import java.io.OutputStream
 @Serializable
 data class Settings(
     val port: Int = 4040,
-    val dirBlacklist: List<String> = listOf("/storage/emulated/0/Notifications")
+    val dirBlacklist: List<String> = listOf("/storage/emulated/0/Notifications"),
+    val lastFmKey: String = "34b804c90e8b21d4765546bd0271ff98"
 )
 
 object SetSerializer : Serializer<Settings> {
@@ -40,4 +41,5 @@ object SetSerializer : Serializer<Settings> {
 class SettingsRepo(settings: DataStore<Settings>) : BasePrefManager(settings) {
     val port = preference(Settings::port)
     val dirBlacklist = preference(Settings::dirBlacklist)
+    val lastFmKey = preference(Settings::lastFmKey)
 }
