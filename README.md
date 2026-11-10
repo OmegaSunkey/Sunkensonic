@@ -7,9 +7,12 @@ Doing this specifically with Javalin because I want to.
 
 For now the server can do the following:
 - Artists
-- Album list (depends on the client, i still have something missing)
+- Album list
 - Indexes (i think?)
 - stream music
+- Genres
+- Favoriting and statistics
+- Playlists
 
 Bugs: 
 - **Year is 0.** If this keeps happening to you, please check your file's metadata.
