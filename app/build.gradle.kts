@@ -75,6 +75,8 @@ dependencies {
 
     implementation(libs.ktaglib)
 
+    implementation(libs.okhttp)
+
     implementation(libs.stax.api)
     implementation(libs.stax2.api)
     implementation(libs.woodstox.core) // androd doesnt have some xml libs
