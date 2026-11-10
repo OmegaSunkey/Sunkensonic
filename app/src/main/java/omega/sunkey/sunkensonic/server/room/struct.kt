@@ -64,7 +64,11 @@ data class Album(
     @ColumnInfo(name = "user_rating") val userRating: Int? = null,
     @ColumnInfo(name = "play_count") val playCount: Int = 0,
     @ColumnInfo(name = "last_played") val lastPlayed: Long? = null,
-    @ColumnInfo(name = "folder_id") val folderId: Int? = null
+    @ColumnInfo(name = "folder_id") val folderId: Int? = null,
+    @ColumnInfo(name = "listen_brainz_id") val listenBrainzId: String? = null,
+    @ColumnInfo(name = "small_image_url") val smallImageUrl: String? = null,
+    @ColumnInfo(name = "medium_image_url") val mediumImageUrl: String? = null,
+    @ColumnInfo(name = "large_image_url") val largeImageUrl: String? = null
 )
 
 @Entity(

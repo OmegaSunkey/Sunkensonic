@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import io.javalin.Javalin
 import kotlinx.coroutines.CoroutineScope
+import omega.sunkey.sunkensonic.SunkensonicApplication
 import omega.sunkey.sunkensonic.server.responses.License
 import omega.sunkey.sunkensonic.server.responses.LicenseView
 import omega.sunkey.sunkensonic.server.responses.OpenSubsonicExtensionsPayload
@@ -11,6 +12,7 @@ import omega.sunkey.sunkensonic.server.endpoints.createPlaylist
 import omega.sunkey.sunkensonic.server.endpoints.deletePlaylist
 import omega.sunkey.sunkensonic.server.endpoints.download
 import omega.sunkey.sunkensonic.server.endpoints.getAlbum
+import omega.sunkey.sunkensonic.server.endpoints.getAlbumInfo
 import omega.sunkey.sunkensonic.server.endpoints.getAlbumList
 import omega.sunkey.sunkensonic.server.endpoints.getAlbumList2
 import omega.sunkey.sunkensonic.server.endpoints.getArtist
@@ -41,9 +43,10 @@ import java.time.Instant
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 
-fun Javalin.setPaths(context: Context, scope: CoroutineScope) {
+fun Javalin.setPaths(context: Context, scope: CoroutineScope, lastFmKey: String) {
     val db = SubsonicDatabase.getInstance(context)
     val dao = db.subsonicDao()
+    val httpClient = (context as SunkensonicApplication).httpClient
 
     this.get("/rest/ping*") { ctx ->
         success(ctx, null)
@@ -71,6 +74,14 @@ fun Javalin.setPaths(context: Context, scope: CoroutineScope) {
 
     this.get("/rest/getArtist*") { ctx ->
         getArtist(ctx, scope, dao)
+    }
+
+    this.get("/rest/getAlbumInfo2*") { ctx ->
+        getAlbumInfo(ctx, scope, dao, lastFmKey, httpClient)
+    }
+
+    this.get("/rest/getAlbumInfo*") { ctx ->
+        getAlbumInfo(ctx, scope, dao, lastFmKey, httpClient)
     }
 
     this.get("/rest/getAlbumList2*") { ctx ->

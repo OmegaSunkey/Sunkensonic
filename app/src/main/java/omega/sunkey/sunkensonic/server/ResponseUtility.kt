@@ -2,6 +2,13 @@ package omega.sunkey.sunkensonic.server
 
 import com.fasterxml.jackson.dataformat.xml.XmlMapper
 import io.javalin.http.Context
+import kotlinx.coroutines.suspendCancellableCoroutine
+import okhttp3.Response
+import okhttp3.Call
+import okhttp3.Callback
+import java.io.IOException
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 
 
 fun reject(ctx: Context, reason: Reject) {
@@ -53,4 +60,25 @@ enum class Reject(val code: Int, val message: String) {
     INVALIDKEY(44, "Invalid API key."),
     NOAUTH(50, "User is not authorized for the given operation"),
     NODATA(70, "The requested data was not found.")
+}
+
+// Source - https://stackoverflow.com/a/79756792
+// Posted by charlag
+// Retrieved 2026-11-10, License - CC BY-SA 4.0
+
+
+internal suspend inline fun Call.await(): Response {
+    return suspendCancellableCoroutine { continuation ->
+        val callback: Callback = object : Callback {
+            override fun onResponse(call: Call, response: Response) {
+                continuation.resume(response)
+            }
+
+            override fun onFailure(call: Call, e: IOException) {
+                continuation.resumeWithException(e)
+            }
+        }
+        this.enqueue(callback)
+        continuation.invokeOnCancellation { this.cancel() }
+    }
 }
