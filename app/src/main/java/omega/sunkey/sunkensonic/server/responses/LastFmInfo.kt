@@ -48,7 +48,11 @@ data class LastFmAlbum(
     val listeners: String,
     val playcount: String,
     val url: String,
-    val wiki: LastFmWiki = LastFmWiki("Who knows", "There is no wiki", "There is no information about this album")
+    val wiki: LastFmWiki = LastFmWiki(
+        "Who knows",
+        "There is no wiki",
+        "There is no Last.FM information about this album"
+    )
 )
 
 @Serializable
