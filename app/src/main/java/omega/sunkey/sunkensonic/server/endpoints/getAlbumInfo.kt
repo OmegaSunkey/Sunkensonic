@@ -38,9 +38,11 @@ fun getAlbumInfo(context: Context, scope: CoroutineScope, dao: SubsonicDao, last
                 json.album.mbid,
                 json.album.image.first { it.size == "small" }.text,
                 json.album.image.first { it.size == "medium" }.text,
-                json.album.image.first { it.size == "large" }.text
+                json.album.image.first { it.size == "large" }.text,
+                json.album.wiki.content
             )
             success(context, AlbumInfoView(AlbumInfo(
+                notes = json.album.wiki.content,
                 musicBrainzId = json.album.mbid,
                 smallImageUrl = json.album.image.first { it.size == "small" }.text,
                 mediumImageUrl = json.album.image.first { it.size == "medium" }.text,
@@ -49,6 +51,7 @@ fun getAlbumInfo(context: Context, scope: CoroutineScope, dao: SubsonicDao, last
             return@future
         } else {
             success(context, AlbumInfoView(AlbumInfo(
+                notes = album.album.notes!!,
                 musicBrainzId = album.album.listenBrainzId,
                 smallImageUrl = album.album.smallImageUrl!!,
                 mediumImageUrl = album.album.mediumImageUrl!!,

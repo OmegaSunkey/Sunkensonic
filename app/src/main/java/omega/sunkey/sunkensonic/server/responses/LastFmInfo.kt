@@ -8,6 +8,7 @@ data class AlbumInfoView(
 )
 
 data class AlbumInfo(
+    val notes: String,
     val musicBrainzId: String,
     val smallImageUrl: String,
     val mediumImageUrl: String,
@@ -46,7 +47,8 @@ data class LastFmAlbum(
     val tracks: LastFmTracks,
     val listeners: String,
     val playcount: String,
-    val url: String
+    val url: String,
+    val wiki: LastFmWiki = LastFmWiki("Who knows", "There is no wiki", "There is no information about this album")
 )
 
 @Serializable
@@ -89,6 +91,13 @@ data class LastFmArtistInAlbum(
     val url: String,
     val name: String,
     val mbid: String
+)
+
+@Serializable
+data class LastFmWiki(
+    val published: String,
+    val summary: String,
+    val content: String
 )
 
 @Serializable

@@ -68,7 +68,8 @@ data class Album(
     @ColumnInfo(name = "listen_brainz_id") val listenBrainzId: String? = null,
     @ColumnInfo(name = "small_image_url") val smallImageUrl: String? = null,
     @ColumnInfo(name = "medium_image_url") val mediumImageUrl: String? = null,
-    @ColumnInfo(name = "large_image_url") val largeImageUrl: String? = null
+    @ColumnInfo(name = "large_image_url") val largeImageUrl: String? = null,
+    @ColumnInfo(name = "notes") val notes: String? = null
 )
 
 @Entity(
