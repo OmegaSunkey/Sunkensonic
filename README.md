@@ -8,7 +8,6 @@ Doing this specifically with Javalin because I want to.
 For now the server can do the following:
 - Artists
 - Album list
-- Indexes (i think?)
 - stream music
 - Genres
 - Favoriting and statistics
@@ -17,6 +16,7 @@ For now the server can do the following:
 Bugs: 
 - **Year is 0.** If this keeps happening to you, please check your file's metadata.
 - **No transcoding.** This server has not implemented transcoding yet.  
+- **Indexes don't work properly.** This fucking endpoint.
 
 ## TO-DO
 
