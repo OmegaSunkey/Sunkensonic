@@ -11,6 +11,7 @@ import omega.sunkey.sunkensonic.server.room.SubsonicDao
 import java.io.InputStream
 import androidx.core.net.toUri
 import omega.sunkey.sunkensonic.server.Reject
+import java.io.FileNotFoundException
 
 fun getCoverArt(context: Context, scope: CoroutineScope, dao: SubsonicDao, androidContext: android.content.Context) {
     val id = context.queryParam("id")
@@ -35,13 +36,18 @@ suspend fun getCoverArt(androidContext: android.content.Context, id: String, dao
         }
         ContentUris.withAppendedId("content://media/external/audio/albumart/".toUri(), playlist.songs!![0].song.coverArt.toLong())
     }
-    Log.i("getCoverArt", "Uri: $uri")
-    val inputStream = androidContext.contentResolver.openInputStream(uri)
-    val inputStream2 = androidContext.contentResolver.openInputStream(uri)
-    if(inputStream != null && inputStream2 != null) {
-        context.header("Content-Type", contentType(inputStream))
-        context.result(resultStream = inputStream2)
-    } else {
+    try {
+        val inputStream = androidContext.contentResolver.openInputStream(uri)
+        val inputStream2 = androidContext.contentResolver.openInputStream(uri)
+        if (inputStream != null && inputStream2 != null) {
+            context.header("Content-Type", contentType(inputStream))
+            context.result(resultStream = inputStream2)
+        } else {
+            reject(context, Reject.NODATA)
+            return
+        }
+    } catch (e: FileNotFoundException) {
+        Log.e("getCoverArt", e.toString())
         reject(context, Reject.NODATA)
         return
     }
