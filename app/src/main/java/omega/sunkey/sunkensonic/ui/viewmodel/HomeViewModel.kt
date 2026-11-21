@@ -14,11 +14,14 @@ import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import omega.sunkey.sunkensonic.SunkensonicApplication
 import omega.sunkey.sunkensonic.server.KTagLibMediaScanner
 import omega.sunkey.sunkensonic.server.ServerService
@@ -58,12 +61,17 @@ class HomeViewModel(private val settingsRepo: SettingsRepo) : ViewModel() {
         false
     }
 
-    fun getServerStateAsFlow(context: Context): StateFlow<Server> {
-        when(context.isMyServiceRunning(ServerService::class.java)) {
-                true -> _serverState.value = Server.Enabled
-                false -> _serverState.value = Server.Disabled
+    fun loopServerState(context: Context) {
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                while(true) {
+                    when(context.isMyServiceRunning(ServerService::class.java)) {
+                        true -> _serverState.value = Server.Enabled
+                        false -> _serverState.value = Server.Disabled
+                    }
+                }
+            }
         }
-        return serverState
     }
 
     private val _serverState = MutableStateFlow<Server>(Server.Disabled)

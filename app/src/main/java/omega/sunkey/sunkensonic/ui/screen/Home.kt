@@ -53,9 +53,11 @@ fun Home(
     }
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     val scanState by homeViewModel.getScanStateAsFlow(context).collectAsState()
-    val serverState by homeViewModel.getServerStateAsFlow(context).collectAsState()
+    val serverState by homeViewModel.serverState.collectAsState()
     val port by homeViewModel.port.collectAsState(4040)
     val lastFmKey by homeViewModel.lastFmKey.collectAsState("")
+
+    homeViewModel.loopServerState(context)
 
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
