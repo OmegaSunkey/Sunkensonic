@@ -19,7 +19,6 @@ fun getCoverArt(context: Context, scope: CoroutineScope, dao: SubsonicDao, andro
         reject(context, Reject.MISSINGPARAM)
         return
     }
-    Log.i("endpoint", context.fullUrl())
     context.future(scope.future {
         getCoverArt(androidContext, id, dao, context)
     })
