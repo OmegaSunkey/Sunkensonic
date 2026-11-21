@@ -23,7 +23,6 @@ Bugs:
 Implement:
 - getPlayQueue, savePlayQueue, getBookmarks, saveBookmark, deleteBookmark
 - getRandomSongs
-- getAlbumInfo, getArtistInfo
 
 ## Is this working? What can I use?
 
