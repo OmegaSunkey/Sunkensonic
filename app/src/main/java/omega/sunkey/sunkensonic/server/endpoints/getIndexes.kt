@@ -15,7 +15,7 @@ import omega.sunkey.sunkensonic.server.success
 import kotlin.collections.set
 
 fun getIndexes(context: Context, scope: CoroutineScope, dao: SubsonicDao) {
-    val musicFolderId = context.queryParam("musicFolderId")
+    val musicFolderId = context.queryParam("musicFolderId")?.toIntOrNull()
     context.future(scope.future {
         val ignoredArticles = listOf("The", "El", "La", "Los", "Las")
         val allArtists = dao.getAllArtistsWithMeta()
@@ -24,6 +24,7 @@ fun getIndexes(context: Context, scope: CoroutineScope, dao: SubsonicDao) {
         val indexAlbumMap = mutableMapOf<String, MutableList<AlbumData>>()
         val finalIndex = mutableListOf<Index>()
         for(metaartist in allArtists) {
+            if(musicFolderId != null && metaartist.artist.folderId != musicFolderId) continue
             val fChar = getFirstChar(metaartist.artist.name, ignoredArticles)
             if(indexArtistMap.containsKey(fChar)) {
                 indexArtistMap[fChar]!!.add(
@@ -36,6 +37,7 @@ fun getIndexes(context: Context, scope: CoroutineScope, dao: SubsonicDao) {
             }
         }
         for(metaalbum in allAlbums) {
+            if(musicFolderId != null && metaalbum.album.folderId != musicFolderId) continue
             val fChar = getFirstChar(metaalbum.album.title, ignoredArticles)
             var totalDuration = 0
             metaalbum.songs.forEach {
