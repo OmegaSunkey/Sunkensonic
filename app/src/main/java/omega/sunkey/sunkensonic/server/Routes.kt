@@ -207,7 +207,7 @@ fun Javalin.setPaths(context: Context, scope: CoroutineScope, lastFmKey: String,
     }
 
     this.after("/*") { ctx ->
-        Log.i("Routes", "200; Client requested: ${ctx.fullUrl()}")
+        Log.i("Routes", "${ctx.url().substringAfterLast("/")}; Client requested: ${ctx.fullUrl()}")
     }
 }
 
