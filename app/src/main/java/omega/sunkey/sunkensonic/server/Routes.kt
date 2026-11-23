@@ -25,6 +25,7 @@ import omega.sunkey.sunkensonic.server.endpoints.getIndexes
 import omega.sunkey.sunkensonic.server.endpoints.getMusicDirectory
 import omega.sunkey.sunkensonic.server.endpoints.getMusicFolders
 import omega.sunkey.sunkensonic.server.endpoints.getNowPlaying
+import omega.sunkey.sunkensonic.server.endpoints.getPlayQueue
 import omega.sunkey.sunkensonic.server.endpoints.getPlaylist
 import omega.sunkey.sunkensonic.server.endpoints.getPlaylists
 import omega.sunkey.sunkensonic.server.endpoints.getSong
@@ -32,6 +33,7 @@ import omega.sunkey.sunkensonic.server.endpoints.getStarred
 import omega.sunkey.sunkensonic.server.endpoints.getStarred2
 import omega.sunkey.sunkensonic.server.endpoints.getUser
 import omega.sunkey.sunkensonic.server.endpoints.getUsers
+import omega.sunkey.sunkensonic.server.endpoints.savePlayQueue
 import omega.sunkey.sunkensonic.server.endpoints.scrobble
 import omega.sunkey.sunkensonic.server.endpoints.search3
 import omega.sunkey.sunkensonic.server.endpoints.setRating
@@ -39,13 +41,14 @@ import omega.sunkey.sunkensonic.server.endpoints.star
 import omega.sunkey.sunkensonic.server.endpoints.stream
 import omega.sunkey.sunkensonic.server.endpoints.unstar
 import omega.sunkey.sunkensonic.server.endpoints.updatePlaylist
+import omega.sunkey.sunkensonic.server.responses.SubsonicPlayQueue
 import omega.sunkey.sunkensonic.server.room.SubsonicDatabase
 import java.security.MessageDigest
 import java.time.Instant
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 
-fun Javalin.setPaths(context: Context, scope: CoroutineScope, lastFmKey: String) {
+fun Javalin.setPaths(context: Context, scope: CoroutineScope, lastFmKey: String, playQueue: SubsonicPlayQueue) {
     val db = SubsonicDatabase.getInstance(context)
     val dao = db.subsonicDao()
     val httpClient = (context as SunkensonicApplication).httpClient
@@ -188,6 +191,14 @@ fun Javalin.setPaths(context: Context, scope: CoroutineScope, lastFmKey: String)
 
     this.get("/rest/download*") { ctx ->
         download(ctx, scope, dao, context)
+    }
+
+    this.get("/rest/getPlayQueue*") { ctx ->
+        getPlayQueue(ctx, scope, dao, playQueue)
+    }
+
+    this.get("/rest/savePlayQueue*") { ctx ->
+        savePlayQueue(ctx, scope, dao, playQueue)
     }
 
     this.error(404) { ctx ->

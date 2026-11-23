@@ -19,6 +19,7 @@ import kotlinx.coroutines.cancel
 import omega.sunkey.sunkensonic.MainActivity
 import omega.sunkey.sunkensonic.R
 import omega.sunkey.sunkensonic.server.endpoints.setBeforeHandler
+import omega.sunkey.sunkensonic.server.responses.SubsonicPlayQueue
 
 class ServerService : Service() {
     private var server: Javalin? = null
@@ -44,11 +45,12 @@ class ServerService : Service() {
         return START_STICKY
     }
     private fun start(port: Int, lastFmKey: String) {
+        val playQueue = SubsonicPlayQueue()
         server = Javalin.create { config ->
             config.showJavalinBanner = false
         }.apply {
             setBeforeHandler()
-            setPaths(applicationContext, serverScope, lastFmKey)
+            setPaths(applicationContext, serverScope, lastFmKey, playQueue)
         }.start("0.0.0.0", port)
 
         Log.i("ServerService", "started")
