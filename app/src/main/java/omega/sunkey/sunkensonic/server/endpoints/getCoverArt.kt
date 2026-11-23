@@ -1,6 +1,7 @@
 package omega.sunkey.sunkensonic.server.endpoints
 
 import android.content.ContentUris
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Log
 import io.javalin.http.Context
@@ -15,6 +16,7 @@ import java.io.FileNotFoundException
 
 fun getCoverArt(context: Context, scope: CoroutineScope, dao: SubsonicDao, androidContext: android.content.Context) {
     val id = context.queryParam("id")
+    val size = context.queryParam("size")
     if(id == null) {
         reject(context, Reject.MISSINGPARAM)
         return
@@ -46,8 +48,13 @@ fun getCoverArt(context: Context, scope: CoroutineScope, dao: SubsonicDao, andro
             val inputStream = androidContext.contentResolver.openInputStream(uri)
             val inputStream2 = androidContext.contentResolver.openInputStream(uri)
             if (inputStream != null && inputStream2 != null) {
-                context.contentType(contentType(inputStream))
-                context.result(resultStream = inputStream2)
+                if (size?.toIntOrNull() != null) {
+                    context.contentType(contentType(inputStream))
+                    Bitmap.createScaledBitmap(BitmapFactory.decodeStream(inputStream2), size.toInt(), size.toInt(), true).compress(Bitmap.CompressFormat.JPEG, 80, context.res.outputStream)
+                } else {
+                    context.contentType(contentType(inputStream))
+                    context.result(resultStream = inputStream2)
+                }
             } else {
                 reject(context, Reject.NODATA)
                 return@future
