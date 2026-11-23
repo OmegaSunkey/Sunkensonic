@@ -34,7 +34,7 @@ fun getCoverArt(context: Context, scope: CoroutineScope, dao: SubsonicDao, andro
                 dao.getPlaylist(id)?.songs?.get(0)?.song?.coverArt
             }
             else -> {
-                null
+                if(id.toLongOrNull() != null) id else null
             }
         }
         if (cover == null) {
