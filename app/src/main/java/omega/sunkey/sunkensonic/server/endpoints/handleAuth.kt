@@ -35,6 +35,8 @@ fun Javalin.setBeforeHandler() {
         if(u != "sunkey" && auth) {
             throw AuthException(Reject.WRONGAUTH, Reject.WRONGAUTH.message)
         } else ctx.attribute("currentUser", u)
+
+        ctx.attribute("client", ctx.queryParam("c") ?: "Unknown Client")
     }
 }
 
