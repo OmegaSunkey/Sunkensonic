@@ -79,13 +79,13 @@ fun createPlaylist(context: Context, scope: CoroutineScope, dao: SubsonicDao) {
         }
         if (name != null && songIds.isNotEmpty()) {
             val (songList, songPlaylist, totalDuration) = getSongList(songIds, dao, name, 0)
-            dao.insertPlaylist(Playlist(name.md5(), name, "", context.attribute<String>("currentUser")!!, false,songIds.size, totalDuration, Clock.System.now().epochSeconds, null))
+            dao.insertPlaylist(Playlist("pl-" + name.md5(), name, "", context.attribute<String>("currentUser")!!, false,songIds.size, totalDuration, Clock.System.now().epochSeconds, null))
             dao.insertPlaylistSongs(songPlaylist)
             success(
                 context,
                 SinglePlaylistView(
                     SinglePlaylistData(
-                        name.md5(),
+                        "pl-" + name.md5(),
                         name,
                         "",
                         context.attribute<String>("currentUser")!!,
@@ -99,12 +99,12 @@ fun createPlaylist(context: Context, scope: CoroutineScope, dao: SubsonicDao) {
                 )
             )
         } else if (name != null) {
-            dao.insertPlaylist(Playlist(name.md5(), name, "", context.attribute<String>("currentUser")!!, false,0, 0, Clock.System.now().epochSeconds, null))
+            dao.insertPlaylist(Playlist("pl-" + name.md5(), name, "", context.attribute<String>("currentUser")!!, false,0, 0, Clock.System.now().epochSeconds, null))
             success(
                 context,
                 SinglePlaylistView(
                     SinglePlaylistData(
-                        name.md5(),
+                        "pl-" + name.md5(),
                         name,
                         "",
                         context.attribute<String>("currentUser")!!,
