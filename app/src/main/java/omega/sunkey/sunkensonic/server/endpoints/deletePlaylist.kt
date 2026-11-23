@@ -9,7 +9,7 @@ import omega.sunkey.sunkensonic.server.room.SubsonicDao
 import omega.sunkey.sunkensonic.server.success
 
 fun deletePlaylist(context: Context, scope: CoroutineScope, dao: SubsonicDao) {
-    val playlistId = context.queryParam("playlistId")
+    val playlistId = context.queryParam("id")
     if (playlistId == null) {
         reject(context, Reject.MISSINGPARAM)
         return
