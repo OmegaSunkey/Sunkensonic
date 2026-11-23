@@ -20,38 +20,45 @@ fun getCoverArt(context: Context, scope: CoroutineScope, dao: SubsonicDao, andro
         return
     }
     context.future(scope.future {
-        getCoverArt(androidContext, id, dao, context)
+        val cover = when(id.substringBefore("-")) {
+            "so" -> {
+                dao.getSong(id)?.coverArt
+            }
+            "ar" -> {
+                dao.getArtistWithDetails(id)?.albums[0]?.album?.coverArt
+            }
+            "al" -> {
+                dao.getAlbum(id)?.coverArt
+            }
+            "pl" -> {
+                dao.getPlaylist(id)?.songs?.get(0)?.song?.coverArt
+            }
+            else -> {
+                null
+            }
+        }
+        if (cover == null) {
+            reject(context, Reject.NODATA)
+            return@future
+        }
+        val uri = ContentUris.withAppendedId("content://media/external/audio/albumart/".toUri(), cover.toLong())
+        try {
+            val inputStream = androidContext.contentResolver.openInputStream(uri)
+            val inputStream2 = androidContext.contentResolver.openInputStream(uri)
+            if (inputStream != null && inputStream2 != null) {
+                context.contentType(contentType(inputStream))
+                context.result(resultStream = inputStream2)
+            } else {
+                reject(context, Reject.NODATA)
+                return@future
+            }
+        } catch (e: FileNotFoundException) {
+            Log.e("getCoverArt", e.toString())
+            reject(context, Reject.NODATA)
+            return@future
+        }
     })
 }
-
-suspend fun getCoverArt(androidContext: android.content.Context, id: String, dao: SubsonicDao, context: Context) {
-    val uri = if (id.toLongOrNull() != null) {
-        ContentUris.withAppendedId("content://media/external/audio/albumart/".toUri(), id.toLong())
-    } else {
-        val playlist = dao.getPlaylist(id)
-        if (playlist == null || playlist.songs?.isEmpty() == true) {
-            reject(context, Reject.NODATA)
-            return
-        }
-        ContentUris.withAppendedId("content://media/external/audio/albumart/".toUri(), playlist.songs!![0].song.coverArt.toLong())
-    }
-    try {
-        val inputStream = androidContext.contentResolver.openInputStream(uri)
-        val inputStream2 = androidContext.contentResolver.openInputStream(uri)
-        if (inputStream != null && inputStream2 != null) {
-            context.header("Content-Type", contentType(inputStream))
-            context.result(resultStream = inputStream2)
-        } else {
-            reject(context, Reject.NODATA)
-            return
-        }
-    } catch (e: FileNotFoundException) {
-        Log.e("getCoverArt", e.toString())
-        reject(context, Reject.NODATA)
-        return
-    }
-}
-
 fun contentType(image: InputStream?): String {
     if(image == null) return ""
     val options = BitmapFactory.Options().apply {
