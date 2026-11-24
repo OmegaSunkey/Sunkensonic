@@ -35,6 +35,7 @@ import omega.sunkey.sunkensonic.server.endpoints.getUser
 import omega.sunkey.sunkensonic.server.endpoints.getUsers
 import omega.sunkey.sunkensonic.server.endpoints.savePlayQueue
 import omega.sunkey.sunkensonic.server.endpoints.scrobble
+import omega.sunkey.sunkensonic.server.endpoints.search2
 import omega.sunkey.sunkensonic.server.endpoints.search3
 import omega.sunkey.sunkensonic.server.endpoints.setRating
 import omega.sunkey.sunkensonic.server.endpoints.star
@@ -115,6 +116,10 @@ fun Javalin.setPaths(context: Context, scope: CoroutineScope, lastFmKey: String,
 
     this.get("/rest/getIndexes*") { ctx ->
         getIndexes(ctx, scope, dao)
+    }
+
+    this.get("/rest/search2*") { ctx ->
+        search2(ctx, scope, dao)
     }
 
     this.get("/rest/search3*") { ctx ->
