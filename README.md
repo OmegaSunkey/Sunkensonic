@@ -21,8 +21,11 @@ Bugs:
 ## TO-DO
 
 Implement:
-- getPlayQueue, savePlayQueue, getBookmarks, saveBookmark, deleteBookmark
 - getRandomSongs
+- getTopSongs
+- getSimilarSongs
+
+Last two will come much much later because Last.FM is paywalling its API. These will use Musicbrainz instead.
 
 ## Is this working? What can I use?
 
