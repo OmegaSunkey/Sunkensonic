@@ -4,6 +4,10 @@ data class SearchView(
     val searchResult3: Search
 )
 
+data class SearchView2(
+    val searchResult2: Search
+)
+
 data class Search(
     val artist: List<ArtistData>,
     val album: List<AlbumData>,
