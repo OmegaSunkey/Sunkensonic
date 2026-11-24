@@ -31,7 +31,6 @@ fun reject(ctx: Context, reason: Reject) {
 
 fun <T> success(ctx: Context, payload: T? = null) {
     val response = Response(
-        status = "ok",
         payload = payload
     )
     val root = Root(response)

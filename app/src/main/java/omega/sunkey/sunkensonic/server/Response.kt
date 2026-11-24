@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonRootName
 import com.fasterxml.jackson.annotation.JsonUnwrapped
 
 data class Response<T>(
-    val status: String,
+    val status: String = "ok",
     val version: String = "1.16.1",
     val type: String = "SunkenSonic",
     val serverVersion: String = "1.0.0",
