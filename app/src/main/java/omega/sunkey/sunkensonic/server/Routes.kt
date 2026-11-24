@@ -5,10 +5,12 @@ import android.util.Log
 import io.javalin.Javalin
 import kotlinx.coroutines.CoroutineScope
 import omega.sunkey.sunkensonic.SunkensonicApplication
+import omega.sunkey.sunkensonic.server.endpoints.createBookmark
 import omega.sunkey.sunkensonic.server.responses.License
 import omega.sunkey.sunkensonic.server.responses.LicenseView
 import omega.sunkey.sunkensonic.server.responses.OpenSubsonicExtensionsPayload
 import omega.sunkey.sunkensonic.server.endpoints.createPlaylist
+import omega.sunkey.sunkensonic.server.endpoints.deleteBookmark
 import omega.sunkey.sunkensonic.server.endpoints.deletePlaylist
 import omega.sunkey.sunkensonic.server.endpoints.download
 import omega.sunkey.sunkensonic.server.endpoints.getAlbum
@@ -19,6 +21,7 @@ import omega.sunkey.sunkensonic.server.endpoints.getArtist
 import omega.sunkey.sunkensonic.server.endpoints.getArtistInfo
 import omega.sunkey.sunkensonic.server.endpoints.getArtistInfo2
 import omega.sunkey.sunkensonic.server.endpoints.getArtists
+import omega.sunkey.sunkensonic.server.endpoints.getBookmarks
 import omega.sunkey.sunkensonic.server.endpoints.getCoverArt
 import omega.sunkey.sunkensonic.server.endpoints.getGenres
 import omega.sunkey.sunkensonic.server.endpoints.getIndexes
@@ -204,6 +207,18 @@ fun Javalin.setPaths(context: Context, scope: CoroutineScope, lastFmKey: String,
 
     this.get("/rest/savePlayQueue*") { ctx ->
         savePlayQueue(ctx, scope, dao, playQueue)
+    }
+
+    this.get("/rest/getBookmarks*") { ctx ->
+        getBookmarks(ctx, scope, dao, playQueue)
+    }
+
+    this.get("/rest/createBookmark*") { ctx ->
+        createBookmark(ctx, scope, dao, playQueue)
+    }
+
+    this.get("/rest/deleteBookmark*") { ctx ->
+        deleteBookmark(ctx, scope, playQueue)
     }
 
     this.error(404) { ctx ->

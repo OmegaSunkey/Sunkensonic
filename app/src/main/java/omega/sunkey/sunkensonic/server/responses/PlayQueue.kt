@@ -7,6 +7,7 @@ import kotlin.time.Clock
 class SubsonicPlayQueue {
     private val _songQueues = mutableMapOf<String, MutableList<SongData>>()
     private val _queues = mutableMapOf<String, PlayQueue>()
+    private val _bookmarks = mutableMapOf<String, MutableMap<String, Bookmark>>()
 
     fun getQueue(username: String): PlayQueue {
         if(_queues.containsKey(username)) {
@@ -63,6 +64,36 @@ class SubsonicPlayQueue {
                 changed = Clock.System.now().epochSeconds.toIsoTime(),
                 changedBy = client
             )
+        }
+    }
+
+    fun getBookmarksByUsername(username: String): List<Bookmark> {
+        return if (_bookmarks.containsKey(username)) {
+            _bookmarks[username]!!.values.toList()
+        } else emptyList()
+    }
+
+    fun getBookmarkMapByUsername(username: String): Map<String, Bookmark> {
+        return if (_bookmarks.containsKey(username)) {
+            _bookmarks[username]!!.toMap()
+        } else emptyMap()
+    }
+
+    fun removeBookmarkByUsername(username: String, id: String) {
+        if (_bookmarks.containsKey(username)) {
+            _bookmarks[username]!!.remove(id)
+        }
+    }
+
+    fun addBookmarkByUsername(username: String, id: String, bookmark: Bookmark) {
+        if (_bookmarks.containsKey(username)) {
+            _bookmarks[username]!![id] = bookmark
+        }
+    }
+
+    fun updateBookmarkByUsername(username: String, id: String, bookmark: Bookmark) {
+        if (_bookmarks.containsKey(username)) {
+            _bookmarks[username]!![id] = bookmark
         }
     }
 }
