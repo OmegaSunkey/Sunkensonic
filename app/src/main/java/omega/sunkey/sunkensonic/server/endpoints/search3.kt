@@ -18,9 +18,9 @@ import kotlin.math.min
 fun search3(context: Context, scope: CoroutineScope, dao: SubsonicDao) {
     val query = context.queryParam("query")
     val musicFolderId = context.queryParam("musicFolderId")?.toIntOrNull()
-    val artistCount = if(context.queryParam("artistCount") != null) min(context.queryParam("artistCount")!!.toInt(), 40) else 20
-    val albumCount = if(context.queryParam("albumCount") != null) min(context.queryParam("albumCount")!!.toInt(), 40) else 20
-    val songCount = if(context.queryParam("songCount") != null) min(context.queryParam("songCount")!!.toInt(), 40) else 20
+    val artistCount = context.queryParam("artistCount")?.toIntOrNull() ?: 20
+    val albumCount = context.queryParam("albumCount")?.toIntOrNull() ?: 20
+    val songCount = context.queryParam("songCount")?.toIntOrNull() ?: 20
 
     val artistOffset = context.queryParam("artistOffset")?.toIntOrNull() ?: 0
     val albumOffset = context.queryParam("albumOffset")?.toIntOrNull() ?: 0
