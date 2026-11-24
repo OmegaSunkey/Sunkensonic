@@ -42,7 +42,11 @@
 }
 -dontwarn com.fasterxml.jackson.**
 # Keep your data classes used for serialization
--keep class com.yourdomain.subsonicserver.model.** { *; }
+-keep class omega.sunkey.sunkensonic.server.responses.** { *; }
+-keep class omega.sunkey.sunkensonic.server.Response { *; }
+-keep class omega.sunkey.sunkensonic.server.Root { *; }
+-keep class omega.sunkey.sunkensonic.server.Error { *; }
+-keep class omega.sunkey.sunkensonic.server.FailedResponse { *; }
 
 # ── Room ──
 -keep class * extends androidx.room.RoomDatabase { *; }
