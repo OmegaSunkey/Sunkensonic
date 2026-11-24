@@ -70,7 +70,7 @@ class SubsonicPlayQueue {
 data class PlayQueue(
     val current: String?,
     val position: Long?,
-    val username: String?,
+    val username: String,
     val changed: String?,
     val changedBy: String?,
     val entry: List<SongData>
