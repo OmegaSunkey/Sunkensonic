@@ -40,8 +40,8 @@ jobs:
                 chmod +x ./gradlew
                 ./gradlew :app:assembleRelease
                 echo "$KEYSTORE_BASE64" | base64 -d > keystore.jks
-                jarsigner -verbose -sigalg SHA256withRSA -digestalg SHA-256 -keystore keystore.jks -storepass $KEYSTORE_PASSWORD app/build/outputs/apk/release/app-release-unsigned.apk $KEYSTORE_ALIAS
                 $ANDROID_HOME/build-tools/36.0.0/zipalign -v -p 4 app/build/outputs/apk/release/app-release-unsigned.apk app/build/outputs/apk/release/Sunkensonic.apk
+                $ANDROID_HOME/build-tools/36.0.0/apksigner sign --ks keystore.jks --ks-pass env:KEYSTORE_PASSWORD --ks-key-alias "$KEYSTORE_ALIAS" app/build/outputs/apk/release/Sunkensonic.apk
 
             - name: Create release
               env:
